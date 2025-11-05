@@ -85,3 +85,4 @@ compile_commands.json
 # Build Folders
 build
 QSprite
+.qtc_clangd
