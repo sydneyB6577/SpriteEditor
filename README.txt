@@ -1,4 +1,4 @@
-QSprite Project:
+QSprite Project::
 
 This is the repository for the QSprite project of Team Ctrl-Alt-Elite (Alexander Held, Deya Tallman, Graham Taggart, Sydney Burt, Zijia Xie) for the course CS 3505 (Software Practice 2), University of Utah.
 
