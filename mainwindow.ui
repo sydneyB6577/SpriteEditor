@@ -243,21 +243,15 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+       <widget class="QLabel" name="canvasLabel">
         <property name="minimumSize">
          <size>
-          <width>700</width>
-          <height>600</height>
+          <width>300</width>
+          <height>300</height>
          </size>
         </property>
         <property name="text">
-         <string>Canvas will be here</string>
+         <string>TextLabel</string>
         </property>
        </widget>
       </item>
@@ -288,8 +282,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>1169</width>
-           <height>91</height>
+           <width>1173</width>
+           <height>339</height>
           </rect>
          </property>
         </widget>
