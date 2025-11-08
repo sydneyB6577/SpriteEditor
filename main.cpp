@@ -1,11 +1,12 @@
 #include "mainwindow.h"
-
+#include "saveandopen.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    SaveAndOpen saveAndOpen;
+    MainWindow w(&saveAndOpen);
     w.show();
     return a.exec();
 }

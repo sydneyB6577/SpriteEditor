@@ -11,11 +11,13 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    preview.cpp
+    preview.cpp \
+    saveandopen.cpp
 
 HEADERS += \
     mainwindow.h \
-    preview.h
+    preview.h \
+    saveandopen.h
 
 FORMS += \
     mainwindow.ui

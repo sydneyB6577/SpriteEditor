@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1195</width>
+    <width>1100</width>
     <height>750</height>
    </rect>
   </property>
@@ -19,6 +19,9 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <layout class="QVBoxLayout" name="toolbar">
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
+        </property>
         <item>
          <widget class="QPushButton" name="pushButton">
           <property name="sizePolicy">
@@ -244,6 +247,12 @@
       </item>
       <item>
        <widget class="QLabel" name="canvasLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -251,7 +260,7 @@
          </size>
         </property>
         <property name="text">
-         <string>TextLabel</string>
+         <string>Sprite Canvas</string>
         </property>
        </widget>
       </item>
@@ -274,6 +283,18 @@
       </item>
       <item>
        <widget class="QScrollArea" name="scrollArea_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="widgetResizable">
          <bool>true</bool>
         </property>
@@ -282,8 +303,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>1173</width>
-           <height>339</height>
+           <width>1074</width>
+           <height>69</height>
           </rect>
          </property>
         </widget>

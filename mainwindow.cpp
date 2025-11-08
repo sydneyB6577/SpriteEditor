@@ -1,15 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-
 #include <QWidget>
 #include <QImage>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Sprite canvas
+
     QImage img(32, 32, QImage::Format_RGB32);
 
     for (int i = 0; i < 32; i++) {
@@ -24,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     canvas->setPixmap(pixmap);
     canvas->show();
 
+    // Save & open project
+    connect(ui->saveProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::saveProject);
+    connect(ui->openProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::openProject);
 }
 
 MainWindow::~MainWindow()
