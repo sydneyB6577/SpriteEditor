@@ -9,17 +9,20 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    canvasframe.cpp \
     main.cpp \
     mainwindow.cpp \
     preview.cpp \
     saveandopen.cpp
 
 HEADERS += \
+    canvasframe.h \
     mainwindow.h \
     preview.h \
     saveandopen.h
 
 FORMS += \
+    canvasframe.ui \
     mainwindow.ui
 
 # Default rules for deployment.
