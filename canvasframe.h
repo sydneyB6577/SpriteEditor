@@ -32,7 +32,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
-    void updateDisplay();
     Ui::CanvasFrame *ui;
     QImage img;
     QLabel* canvas;
@@ -43,6 +42,7 @@ private:
     int imgSizeX = 32; /// default size will be 32x32
     int imgSizeY = 32; /// default size will be 32x32
     int scale = 10; /// need to scale it by 10x to display properly
+    void updateDisplay();
 };
 
 #endif // CANVASFRAME_H

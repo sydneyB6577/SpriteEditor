@@ -1,6 +1,6 @@
 #include "canvasframe.h"
 #include "ui_canvasframe.h"
-#include <iostream>
+///#include <iostream>
 #include <QPainter>
 
 CanvasFrame::CanvasFrame(QWidget *parent)
@@ -10,11 +10,10 @@ CanvasFrame::CanvasFrame(QWidget *parent)
     ui->setupUi(this);
     color = qRgb(255, 0, 0); /// red as the default drawing color to start with.
     previousColor = color; /// previousColor used to store a color when we switch from the eraser to pen tool
-    /// TODO maybe change imgSize into something else to allow for variable image resolution. Maybe imgSizeX, imgSizeY?
-    img = QImage(imgSizeX, imgSizeY, QImage::Format_RGB32);
-    img.setDotsPerMeterX(32);
+    img = QImage(imgSizeX, imgSizeY, QImage::Format_RGB32); /// uses imgSizeX/Y so we can change resolution later
+    img.setDotsPerMeterX(32); /// supposedly setDotsPerMeterX/Y helps correctly lay out the image.
     img.setDotsPerMeterY(32);
-    img.fill(Qt::white);
+    img.fill(Qt::white); /// default background white
     updateDisplay();
 }
 
@@ -47,7 +46,8 @@ void CanvasFrame::mouseMoveEvent(QMouseEvent *event){
 void CanvasFrame::drawOnCanvas(int x, int y){
     int newX = x / scale;
     int newY = y / scale;
-    std::cout << "Mouse: (" << x << ", " << y << "); " << "Pixel: (" << newX << ", " << newY << ")" << std::endl;
+    /// uncomment for debugging
+    ///std::cout << "Mouse: (" << x << ", " << y << "); " << "Pixel: (" << newX << ", " << newY << ")" << std::endl;
     /// QImage has a valid() function that can check whether or not the mouse is within the Widget rectangle. Use this to figure out if it should draw using valid().
     if (img.valid(newX, newY)) {
         img.setPixel(newX, newY, color);
