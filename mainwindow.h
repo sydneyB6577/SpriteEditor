@@ -2,15 +2,13 @@
 #define MAINWINDOW_H
 #include <QMainWindow>
 #include "saveandopen.h"
+#include "timeline.h"
 #include "canvasframe.h"
-#include <QScrollArea>
-#include <QHBoxLayout>
-#include <QList>
 
-/* Zijia Xie (Team Control-Alt-Elite)
- * November 7, 2025
+/* Zijia Xie, Sydney Burt (Team Control-Alt-Elite)
+ * November 9, 2025
  * A8: Sprite Editor Implementation
- * GitHub Username: homeofhx
+ * GitHub Username: homeofhx, sydneyB6577
  * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx.git
 */
 QT_BEGIN_NAMESPACE
@@ -32,9 +30,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QList<CanvasFrame*> frames; // stores all frames
-    QWidget *frameStripWidget; // container for thumbnails
-    QHBoxLayout *frameStripLayout; // layout for thumbnails
-    CanvasFrame *currentCanvas; // current active canvas
+    Timeline *timeline;
+    QList<CanvasFrame*> frames;      // stores each frame
+    CanvasFrame *currentCanvas;      // the currently active canvas
 };
 #endif // MAINWINDOW_H

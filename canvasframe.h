@@ -17,6 +17,7 @@ class CanvasFrame : public QWidget
 
 public:
     explicit CanvasFrame(QWidget *parent = nullptr);
+    QImage getImage() const { return img; } // Returns the canvas as an image
     ~CanvasFrame();
 
 public slots:

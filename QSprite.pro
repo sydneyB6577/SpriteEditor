@@ -13,13 +13,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     preview.cpp \
-    saveandopen.cpp
+    saveandopen.cpp \
+    timeline.cpp
 
 HEADERS += \
     canvasframe.h \
     mainwindow.h \
     preview.h \
-    saveandopen.h
+    saveandopen.h \
+    timeline.h
 
 FORMS += \
     canvasframe.ui \
