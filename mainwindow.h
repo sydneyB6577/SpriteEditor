@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QMainWindow>
+#include <QStackedWidget>
+#include <QVector>
 #include "saveandopen.h"
 #include "timeline.h"
 #include "canvasframe.h"
@@ -31,7 +33,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Timeline *timeline;
-    QList<CanvasFrame*> frames;      // stores each frame
-    CanvasFrame *currentCanvas;      // the currently active canvas
+    QVector<CanvasFrame*> frames;    // store all frame objects
+    CanvasFrame *currentCanvas;   // the currently active canvas
 };
 #endif // MAINWINDOW_H

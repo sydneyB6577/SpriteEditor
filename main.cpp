@@ -9,4 +9,10 @@ int main(int argc, char *argv[])
     MainWindow w(&saveAndOpen);
     w.show();
     return a.exec();
+
+    qInstallMessageHandler([](QtMsgType, const QMessageLogContext &, const QString &msg){
+        qDebug() << msg;
+    });
 }
+
+

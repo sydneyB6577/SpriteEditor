@@ -14,16 +14,18 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Initialize the timeline and frame list
-    timeline = new Timeline(this);
-    QVBoxLayout *mainLayout = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
-    if (!mainLayout) {
-        mainLayout = new QVBoxLayout(ui->centralwidget);
-        ui->centralwidget->setLayout(mainLayout);
-    }
+    // Make the scroll area’s widget the container for thumbnails
+    QWidget *scrollWidget = new QWidget();
+    scrollWidget->setLayout(new QHBoxLayout());
+    scrollWidget->layout()->setSpacing(4);
+    scrollWidget->layout()->setContentsMargins(4, 4, 4, 4);
 
-    // Add timeline widget to the bottom of the main layout.
-    mainLayout->addWidget(timeline);
+    ui->scrollArea_2->setWidget(scrollWidget);
+    ui->scrollArea_2->setWidgetResizable(true);
+
+    // Create timeline inside scroll area
+    timeline = new Timeline(scrollWidget);
+    scrollWidget->layout()->addWidget(timeline);
 
     // Set up the first frame
     currentCanvas = ui->canvasFrame; // your existing canvas in the UI
@@ -50,34 +52,44 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
 // Adds a frame.
 void MainWindow::addFrame()
 {
-    // 1. Save thumbnail
+    // 1. Save thumbnail of the current canvas
     QImage currentImage = currentCanvas->getImage();
     timeline->addFrameThumbnail(currentImage);
 
-    // 2. Create new canvas
-    CanvasFrame *newFrame = new CanvasFrame(this);
-    newFrame->setFixedSize(currentCanvas->size());
-    frames.append(newFrame);
+    // 2. Create a new CanvasFrame
+    CanvasFrame *newFrame = new CanvasFrame(ui->canvasFrame);
 
-    // 3. Replace the widget properly inside the container
+    // Make it fill the container exactly
+    newFrame->setFixedSize(ui->canvasFrame->size());
+
+    // 3. Replace the old canvas in the container
     QLayout *layout = ui->canvasFrame->layout();
     if (!layout) {
         layout = new QVBoxLayout(ui->canvasFrame);
+        layout->setContentsMargins(0, 0, 0, 0); // no spacing/padding
+        layout->setSpacing(0);
         ui->canvasFrame->setLayout(layout);
     }
 
-    // Remove old and add new
+    // Remove old canvas
     QLayoutItem *oldItem;
     while ((oldItem = layout->takeAt(0)) != nullptr) {
-        delete oldItem->widget();
+        QWidget *w = oldItem->widget();
+        if (w) {
+            w->hide();
+            delete w; // delete old canvas
+        }
         delete oldItem;
     }
+
+    // Add new canvas to the container
     layout->addWidget(newFrame);
 
-    // 4. Update the current canvas pointer
+    // 4. Update current canvas pointer
     currentCanvas = newFrame;
+    frames.append(newFrame);
 
-    // 5. Connect tools
+    // 5. Connect tools to the new canvas
     connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
     connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
 }
