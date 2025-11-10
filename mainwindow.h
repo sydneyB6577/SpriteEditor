@@ -31,6 +31,7 @@ public:
 private slots:
     void addFrame();
     void duplicateCurrentFrame();
+    void chooseColor();
 
 private:
     Ui::MainWindow *ui;
