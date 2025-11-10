@@ -6,6 +6,7 @@
 #include "saveandopen.h"
 #include "timeline.h"
 #include "canvasframe.h"
+#include "preview.h"
 
 /* Zijia Xie, Sydney Burt (Team Control-Alt-Elite)
  * November 9, 2025
@@ -36,5 +37,6 @@ private:
     Timeline *timeline;
     QVector<CanvasFrame*> frames;    // store all frame objects
     CanvasFrame *currentCanvas;   // the currently active canvas
+    Preview *preview;
 };
 #endif // MAINWINDOW_H

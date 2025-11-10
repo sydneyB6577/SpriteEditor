@@ -2,12 +2,14 @@
 #include "ui_mainwindow.h"
 #include "timeline.h"
 #include "canvasframe.h"
+#include "preview.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPainter>
 #include <QPixmap>
 #include <QWidget>
 #include <QImage>
+#include <QSpinBox>
 
 MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     : QMainWindow(parent)
@@ -31,6 +33,12 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     // Set up the first frame
     currentCanvas = ui->canvasFrame; // your existing canvas in the UI
     frames.append(currentCanvas);
+
+    // Preview setup
+    preview = new Preview(this, ui->previewArea);
+    preview->updatePreviewSpeed(ui->animationSpeedSpinBox->value());
+    connect(ui->animationSpeedSpinBox, &QSpinBox::valueChanged, this, [this](int newSpeed){ preview->updatePreviewSpeed(newSpeed); });
+
 
     connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::addFrame);
     connect(ui->duplicateFrameButton, &QPushButton::clicked, this, &MainWindow::duplicateCurrentFrame);
@@ -61,6 +69,9 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
 // Adds a frame.
 void MainWindow::addFrame()
 {
+    // update preview with newly finished frame
+    preview->updatePreviewFrames(frames);
+
     // 1. Save thumbnail of the current canvas
     QImage currentImage = currentCanvas->getImage();
     timeline->addFrameThumbnail(currentImage);
@@ -86,7 +97,8 @@ void MainWindow::addFrame()
         QWidget *w = oldItem->widget();
         if (w) {
             w->hide();
-            delete w; // delete old canvas
+            // delete w; // dont delete the widget,
+            // ^will also delete the canvas frame in it causing it to be a dangling pointer in frames
         }
         delete oldItem;
     }
@@ -105,6 +117,9 @@ void MainWindow::addFrame()
 
 void MainWindow::duplicateCurrentFrame()
 {
+    // update preview with newly finished frame
+    preview->updatePreviewFrames(frames);
+
     if (!currentCanvas) return;
 
     // Save thumbnail of current canvas
