@@ -17,7 +17,10 @@ class CanvasFrame : public QWidget
 
 public:
     explicit CanvasFrame(QWidget *parent = nullptr);
+    void setImage(const QImage &image);
     QImage getImage() const { return img; } // Returns the canvas as an image
+    QRgb getPenColor() const { return penColor; }
+    bool isEraserActive() const { return color == eraserColor; }
     ~CanvasFrame();
 
 public slots:
@@ -37,9 +40,10 @@ private:
     QImage img;
     QLabel* canvas;
     QPixmap pixmap;
-    QRgb color;
+    QRgb penColor = qRgb(255,0,0);  // pen color (always red)
+    QRgb color; // current color used for drawing
+    QRgb eraserColor = qRgb(255,255,255);
     QRgb previousColor;
-    QRgb eraserColor = qRgb(255, 255, 255); /// default set to white.
     int imgSizeX = 32; /// default size will be 32x32
     int imgSizeY = 32; /// default size will be 32x32
     int scale = 10; /// need to scale it by 10x to display properly

@@ -17,6 +17,11 @@ CanvasFrame::CanvasFrame(QWidget *parent)
     updateDisplay();
 }
 
+void CanvasFrame::setImage(const QImage &image){
+    img = image;
+    updateDisplay();
+}
+
 void CanvasFrame::changeCanvasSize(int x, int y){
     /// TODO connect this to UI/add way for UI to change values
     imgSizeX = x;
@@ -57,16 +62,15 @@ void CanvasFrame::drawOnCanvas(int x, int y){
 
 void CanvasFrame::setColor(QRgb newColor){
     /// TODO connect this to UI/add way for UI to change values
-    color = newColor;
-    previousColor = newColor;
+    penColor = newColor;
+    color = penColor;
 }
 
 void CanvasFrame::penTool(){
-    color = previousColor;
+    color = penColor;
 }
 
 void CanvasFrame::eraseColor(){
-    previousColor = color;
     color = eraserColor;
 }
 

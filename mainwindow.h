@@ -29,6 +29,7 @@ public:
 
 private slots:
     void addFrame();
+    void duplicateCurrentFrame();
 
 private:
     Ui::MainWindow *ui;
