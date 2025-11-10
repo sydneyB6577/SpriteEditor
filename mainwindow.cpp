@@ -64,6 +64,8 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
             currentCanvas = frames[index];
         }
     });
+
+    saveAndOpen->setFrames(&frames);
 }
 
 // Adds a frame.

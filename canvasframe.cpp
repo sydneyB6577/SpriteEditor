@@ -1,6 +1,5 @@
 #include "canvasframe.h"
 #include "ui_canvasframe.h"
-///#include <iostream>
 #include <QPainter>
 
 CanvasFrame::CanvasFrame(QWidget *parent)
