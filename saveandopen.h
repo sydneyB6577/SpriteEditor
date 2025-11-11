@@ -31,7 +31,7 @@ public:
      * @brief setFrames Helper function to give this SaveAndOpen class a reference to access the canvas frames to save/load the sprite project
      * @param framesReference MainWindow's canvas frames' pointer to be dereferenced
      */
-    void setFrames(QVector<CanvasFrame*> *framesReference);
+    void accessFrames(QVector<CanvasFrame*> *framesReference);
 
 public slots:
     /**
@@ -43,6 +43,13 @@ public slots:
      * @brief openProject Open a new project from hard drive
      */
     void openProject();
+
+signals:
+    /**
+     * @brief projectLoaded Sends a signal to MainWindow to show the loaded project once a JSON file is readed
+     * @param newFrames Frames to be displayed
+     */
+    void projectLoaded(QVector<CanvasFrame*> newFrames);
 
 private:
     /**

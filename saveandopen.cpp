@@ -10,7 +10,7 @@ SaveAndOpen::SaveAndOpen(QObject *parent) : QObject(parent)
 {
 }
 
-void SaveAndOpen::setFrames(QVector<CanvasFrame*> *framesReference)
+void SaveAndOpen::accessFrames(QVector<CanvasFrame*> *framesReference)
 {
     frames = framesReference;
 }
@@ -67,6 +67,58 @@ void SaveAndOpen::saveProject()
 
 void SaveAndOpen::openProject()
 {
-    QString fileName = QFileDialog::getOpenFileName(nullptr, "Open Project", "", "Sprite Project (*.json)");
-    // TODO: dealing with deserializtion, restore the project content on mainwindow
+    QString fileName = QFileDialog::getOpenFileName(nullptr, "Open Project", "", "JSON file (*.json)");
+    if (fileName.isEmpty()) return;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return;
+    }
+    QByteArray projectRawData = file.readAll();
+    file.close();
+
+    QJsonDocument projectJsonData = QJsonDocument::fromJson(projectRawData);
+    if (!projectJsonData.isObject()) {
+        return;
+    }
+    QJsonObject projectJsonObject = projectJsonData.object();
+    QJsonArray frames = projectJsonObject["frames"].toArray();
+    QVector<CanvasFrame*> newFrames;
+
+    for (QJsonValue frame : frames) {
+        QJsonObject jsonFrame = frame.toObject();
+
+        int width = jsonFrame["width"].toInt();
+        int height = jsonFrame["height"].toInt();
+        QImage frameImage(width, height, QImage::Format_RGB32);
+        QJsonArray pixels = jsonFrame["pixels"].toArray();
+
+        int index = 0;
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (index < pixels.size()) {
+                    frameImage.setPixel(x, y, static_cast<QRgb>(pixels[index].toInt()));
+                    ++index;
+                }
+            }
+        }
+
+        CanvasFrame *newFrame = new CanvasFrame();
+
+        if (jsonFrame.contains("penColor")) {
+            newFrame -> setColor(static_cast<QRgb>(jsonFrame["penColor"].toInt()));
+        }
+
+        if (jsonFrame.contains("isEraserActive") && jsonFrame["isEraserActive"].toBool()) {
+            newFrame -> eraseColor();
+        } else {
+            newFrame -> penTool();
+        }
+
+        newFrame -> changeCanvasSize(width, height);
+        newFrame -> setImage(frameImage);
+        newFrames.append(newFrame);
+    }
+
+    emit projectLoaded(newFrames);
 }

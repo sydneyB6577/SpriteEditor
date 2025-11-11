@@ -14,7 +14,6 @@
 #include <QFormLayout>
 #include <QDialogButtonBox>
 
-
 MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -70,7 +69,11 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
         }
     });
 
-    saveAndOpen->setFrames(&frames);
+    // Gives saveAndOpen a pointer to `frames` so it can access all frames during saving/loading
+    saveAndOpen -> accessFrames(&frames);
+
+    // Restores all frames when open a project
+    connect(saveAndOpen, &SaveAndOpen::projectLoaded, this, &MainWindow::restoreFramesFromOpenedProject);
 }
 
 // Adds a frame.
@@ -215,9 +218,22 @@ void MainWindow::chooseColor(){
         currentCanvas->setColor(chosen);
         currentCanvas->penTool();
     }
-
 }
 
+void MainWindow::restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames)
+{
+    frames = newFrames;
+    if (!frames.isEmpty()) {
+        currentCanvas = frames.first();
+    }
+
+    timeline->clearTimeline();
+    for (CanvasFrame *frame : frames) {
+        timeline -> addFrameThumbnail(frame -> getImage());
+    }
+
+    preview -> updatePreviewFrames(frames);
+}
 
 MainWindow::~MainWindow()
 {
