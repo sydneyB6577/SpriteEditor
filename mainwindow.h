@@ -33,6 +33,7 @@ private slots:
     void duplicateCurrentFrame();
     void chooseColor();
     void restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames);
+    void deleteFrame();
 
 private:
     Ui::MainWindow *ui;

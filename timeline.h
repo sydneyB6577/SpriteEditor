@@ -15,6 +15,8 @@ public:
     void addFrameThumbnail(const QImage &frameImage);
     void clearTimeline();
     int frameCount() const { return thumbnails.size(); }
+    int getSelectedFrameIndex() const;
+    void updateSelectedFrameIndex(int index);
 
 signals:
     void frameSelected(int index);  // emitted when user clicks a thumbnail
@@ -25,6 +27,7 @@ private slots:
 private:
     QHBoxLayout *layout;
     QList<QLabel*> thumbnails;
+    int selectedFrameIndex = 0;
 };
 
 #endif // TIMELINE_H

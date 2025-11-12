@@ -42,6 +42,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     preview->updatePreviewSpeed(ui->animationSpeedSpinBox->value());
     connect(ui->animationSpeedSpinBox, &QSpinBox::valueChanged, this, [this](int newSpeed){ preview->updatePreviewSpeed(newSpeed); });
     connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::addFrame);
+    connect(ui->deleteFrameButton, &QPushButton::clicked, this, &MainWindow::deleteFrame);
     connect(ui->duplicateFrameButton, &QPushButton::clicked, this, &MainWindow::duplicateCurrentFrame);
 
     connect(ui->penTool, &QPushButton::clicked, this, [this](){
@@ -105,8 +106,6 @@ void MainWindow::addFrame()
         QWidget *w = oldItem->widget();
         if (w) {
             w->hide();
-            // delete w; // dont delete the widget,
-            // ^will also delete the canvas frame in it causing it to be a dangling pointer in frames
         }
         delete oldItem;
     }
@@ -121,6 +120,74 @@ void MainWindow::addFrame()
     // 5. Connect tools to the new canvas
     connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
     connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
+}
+
+void MainWindow::deleteFrame()
+{
+    int selectedFrameIndex = timeline->getSelectedFrameIndex();
+    // TODO: this index should be the selected frame's index, call updateSelectedFrameIndex()
+
+    if (selectedFrameIndex < 0 || selectedFrameIndex >= frames.size()) {
+        return; // prevents crash
+    }
+
+    // Delete the selected frame
+    CanvasFrame* frameToDelete = frames.takeAt(selectedFrameIndex);
+    delete frameToDelete;
+
+    // Refresh the timeline
+    timeline -> clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline -> addFrameThumbnail(frame -> getImage());
+    }
+
+    // Replace canvas image with next frame; empty canvas if no frames left
+    if (!frames.isEmpty()) {
+        int nextFrameIndex = qMin(selectedFrameIndex, frames.size()-1);
+        currentCanvas = frames[nextFrameIndex];
+
+        QLayout* layout = ui -> canvasFrame -> layout();
+        if (!layout) {
+            layout = new QVBoxLayout(ui -> canvasFrame);
+            layout->setContentsMargins(0, 0, 0, 0);
+            layout->setSpacing(0);
+            ui -> canvasFrame -> setLayout(layout);
+        }
+
+        QLayoutItem* oldItem;
+        while ((oldItem = layout -> takeAt(0)) != nullptr) {
+            QWidget* w = oldItem -> widget();
+            if (w) {
+                w -> hide();
+            }
+            delete oldItem;
+        }
+
+        layout->addWidget(currentCanvas);
+    } else {
+        QLayout* layout = ui->canvasFrame->layout();
+        if (!layout) {
+            layout = new QVBoxLayout(ui -> canvasFrame);
+            layout -> setContentsMargins(0, 0, 0, 0);
+            layout -> setSpacing(0);
+            ui->canvasFrame->setLayout(layout);
+        }
+
+        QLayoutItem* oldItem;
+        while ((oldItem = layout -> takeAt(0)) != nullptr) {
+            QWidget* w = oldItem -> widget();
+            if (w) {
+                w -> hide();
+            }
+            delete oldItem;
+        }
+
+        currentCanvas = new CanvasFrame(ui -> canvasFrame);
+        currentCanvas -> setFixedSize(ui -> canvasFrame -> size());
+        layout -> addWidget(currentCanvas);
+    }
+
+    preview->updatePreviewFrames(frames);
 }
 
 void MainWindow::duplicateCurrentFrame()
@@ -179,15 +246,14 @@ void MainWindow::duplicateCurrentFrame()
     connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
 }
 
-void MainWindow::chooseColor(){
-
+void MainWindow::chooseColor()
+{
     if(!currentCanvas) return;
 
     QDialog dlg(this);
     dlg.setWindowTitle("Choose RGB color");
 
     QFormLayout *layout = new QFormLayout(&dlg);
-
     QSpinBox *rSpin = new QSpinBox(&dlg);
     QSpinBox *gSpin = new QSpinBox(&dlg);
     QSpinBox *bSpin = new QSpinBox(&dlg);

@@ -39,3 +39,11 @@ void Timeline::handleThumbnailClicked()
     int index = thumb->property("frameIndex").toInt();
     emit frameSelected(index);
 }
+
+int Timeline::getSelectedFrameIndex() const {
+    return selectedFrameIndex;
+}
+
+void Timeline::updateSelectedFrameIndex(int index) {
+    selectedFrameIndex = index;
+}
