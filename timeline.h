@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QList>
 #include <QScrollArea>
+#include "clickablelabel.h"
 
 class Timeline : public QWidget
 {
@@ -26,7 +27,7 @@ private slots:
 
 private:
     QHBoxLayout *layout;
-    QList<QLabel*> thumbnails;
+    QList<ClickableLabel*> thumbnails;
     int selectedFrameIndex = 0;
 };
 

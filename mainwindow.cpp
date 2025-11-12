@@ -396,6 +396,12 @@ void MainWindow::rotateCanvasLeft()
     currentCanvas->setImage(rotated);
     currentCanvas->update();
 
+    // Update the current thumbnail in the timeline if needed
+    timeline->clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline->addFrameThumbnail(frame->getImage());
+    }
+
     preview->updatePreviewFrames(frames);
 }
 
@@ -414,6 +420,12 @@ void MainWindow::rotateCanvasRight()
     currentCanvas->setImage(rotated);
     currentCanvas->update();
 
+    // Update the current thumbnail in the timeline if needed
+    timeline->clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline->addFrameThumbnail(frame->getImage());
+    }
+
     preview->updatePreviewFrames(frames);
 }
 
@@ -431,6 +443,12 @@ void MainWindow::resetCanvasOrientation()
     currentCanvas->update();
 
     currentRotationAngle = 0; // reset tracker
+
+    // Update the current thumbnail in the timeline if needed
+    timeline->clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline->addFrameThumbnail(frame->getImage());
+    }
 
     preview->updatePreviewFrames(frames);
 }

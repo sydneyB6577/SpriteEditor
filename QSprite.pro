@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     canvasframe.cpp \
+    clickablelabel.cpp \
     main.cpp \
     mainwindow.cpp \
     preview.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     canvasframe.h \
+    clickablelabel.h \
     mainwindow.h \
     preview.h \
     saveandopen.h \
