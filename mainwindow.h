@@ -34,6 +34,8 @@ private slots:
     void chooseColor();
     void restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames);
     void deleteFrame();
+    void moveFrameLeft();
+    void moveFrameRight();
 
 private:
     Ui::MainWindow *ui;

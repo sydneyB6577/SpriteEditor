@@ -73,6 +73,10 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
 
     // Restores all frames when open a project
     connect(saveAndOpen, &SaveAndOpen::projectLoaded, this, &MainWindow::restoreFramesFromOpenedProject);
+
+    // Connect move frame left/right buttons
+    connect(ui->moveFrameLeft, &QPushButton::clicked, this, &MainWindow::moveFrameLeft);
+    connect(ui->moveFrameRight, &QPushButton::clicked, this, &MainWindow::moveFrameRight);
 }
 
 // Adds a frame.
@@ -127,7 +131,7 @@ void MainWindow::deleteFrame()
     int selectedFrameIndex = timeline->getSelectedFrameIndex();
     // TODO: this index should be the selected frame's index, call updateSelectedFrameIndex()
 
-    if (selectedFrameIndex < 0 || selectedFrameIndex >= frames.size()) {
+    if (selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size()) {
         return; // prevents crash
     }
 
@@ -298,6 +302,45 @@ void MainWindow::restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames)
 
     preview -> updatePreviewFrames(frames);
 }
+
+void MainWindow::moveFrameLeft()
+{
+    int selectedFrameIndex = timeline -> getSelectedFrameIndex();
+    if (selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size()) {
+        return; // prevent crash; reaches boundary
+    }
+
+    frames.swapItemsAt(selectedFrameIndex, selectedFrameIndex-1);
+    currentCanvas = frames[selectedFrameIndex-1];
+
+    timeline->clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline -> addFrameThumbnail(frame -> getImage());
+    }
+
+    timeline -> updateSelectedFrameIndex(selectedFrameIndex-1);
+    preview -> updatePreviewFrames(frames);
+}
+
+void MainWindow::moveFrameRight()
+{
+    int selectedFrameIndex = timeline -> getSelectedFrameIndex();
+    if (selectedFrameIndex < 0 || selectedFrameIndex >= frames.size()-1) {
+        return; // prevent crash; reaches boundary
+    }
+
+    frames.swapItemsAt(selectedFrameIndex, selectedFrameIndex+1);
+    currentCanvas = frames[selectedFrameIndex+1];
+
+    timeline -> clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline->addFrameThumbnail(frame -> getImage());
+    }
+
+    timeline -> updateSelectedFrameIndex(selectedFrameIndex+1);
+    preview -> updatePreviewFrames(frames);
+}
+
 
 MainWindow::~MainWindow()
 {
