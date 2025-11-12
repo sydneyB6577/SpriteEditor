@@ -36,6 +36,9 @@ private slots:
     void deleteFrame();
     void moveFrameLeft();
     void moveFrameRight();
+    void rotateCanvasLeft();
+    void rotateCanvasRight();
+    void resetCanvasOrientation();
 
 private:
     Ui::MainWindow *ui;

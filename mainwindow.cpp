@@ -14,6 +14,8 @@
 #include <QFormLayout>
 #include <QDialogButtonBox>
 
+static int currentRotationAngle = 0;
+
 MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -57,6 +59,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     ///connect(ui->penColor, &QPushButton::clicked, this, [this](){canvasFrame->setColor();}); /// should connect the selection of the penColor to a qRgb value to set CanvasFrame's color
     connect(ui->penColor,&QPushButton::clicked, this, &MainWindow::chooseColor);
     //connect(ui->eraserTool, &QPushButton::clicked, ui->canvasFrame, &CanvasFrame::eraseColor); /// set the color of the canvas frame to white, ie. eraser
+
     // Save & open project.
     connect(ui->saveProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::saveProject);
     connect(ui->openProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::openProject);
@@ -77,6 +80,11 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     // Connect move frame left/right buttons
     connect(ui->moveFrameLeft, &QPushButton::clicked, this, &MainWindow::moveFrameLeft);
     connect(ui->moveFrameRight, &QPushButton::clicked, this, &MainWindow::moveFrameRight);
+
+    // Rotate the canvas
+    connect(ui->rotateLeft, &QPushButton::clicked, this, &MainWindow::rotateCanvasLeft);
+    connect(ui->rotateRight, &QPushButton::clicked, this, &MainWindow::rotateCanvasRight);
+    connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::resetCanvasOrientation);
 }
 
 // Adds a frame.
@@ -124,6 +132,7 @@ void MainWindow::addFrame()
     // 5. Connect tools to the new canvas
     connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
     connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
+    connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::resetCanvasOrientation);
 }
 
 void MainWindow::deleteFrame()
@@ -341,6 +350,59 @@ void MainWindow::moveFrameRight()
     preview -> updatePreviewFrames(frames);
 }
 
+void MainWindow::rotateCanvasLeft()
+{
+    if (!currentCanvas) return;
+
+    currentRotationAngle -= 90; // rotate counter-clockwise
+    if (currentRotationAngle <= -360) currentRotationAngle = 0;
+
+    QImage image = currentCanvas->getImage();
+    QTransform transform;
+    transform.rotate(-90);
+    QImage rotated = image.transformed(transform);
+
+    currentCanvas->setImage(rotated);
+    currentCanvas->update();
+
+    preview->updatePreviewFrames(frames);
+}
+
+void MainWindow::rotateCanvasRight()
+{
+    if (!currentCanvas) return;
+
+    currentRotationAngle += 90; // rotate clockwise
+    if (currentRotationAngle >= 360) currentRotationAngle = 0;
+
+    QImage image = currentCanvas->getImage();
+    QTransform transform;
+    transform.rotate(90);
+    QImage rotated = image.transformed(transform);
+
+    currentCanvas->setImage(rotated);
+    currentCanvas->update();
+
+    preview->updatePreviewFrames(frames);
+}
+
+void MainWindow::resetCanvasOrientation()
+{
+    if (!currentCanvas) return;
+    if (currentRotationAngle == 0) return; // already normal
+
+    QImage image = currentCanvas->getImage();
+    QTransform transform;
+    transform.rotate(-currentRotationAngle); // undo previous rotations
+    QImage reset = image.transformed(transform);
+
+    currentCanvas->setImage(reset);
+    currentCanvas->update();
+
+    currentRotationAngle = 0; // reset tracker
+
+    preview->updatePreviewFrames(frames);
+}
 
 MainWindow::~MainWindow()
 {
