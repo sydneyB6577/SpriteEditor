@@ -32,6 +32,7 @@ private slots:
     void addFrame();
     void duplicateCurrentFrame();
     void chooseColor();
+    void chooseCanvasSize();
     void restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames);
     void deleteFrame();
     void moveFrameLeft();

@@ -10,21 +10,33 @@ CanvasFrame::CanvasFrame(QWidget *parent)
     color = qRgb(255, 0, 0); /// red as the default drawing color to start with.
     previousColor = color; /// previousColor used to store a color when we switch from the eraser to pen tool
     img = QImage(imgSizeX, imgSizeY, QImage::Format_RGB32); /// uses imgSizeX/Y so we can change resolution later
-    img.setDotsPerMeterX(32); /// supposedly setDotsPerMeterX/Y helps correctly lay out the image.
-    img.setDotsPerMeterY(32);
+    img.setDotsPerMeterX(imgSizeX); /// supposedly setDotsPerMeterX/Y helps correctly lay out the image.
+    img.setDotsPerMeterY(imgSizeY);
     img.fill(Qt::white); /// default background white
     updateDisplay();
 }
 
 void CanvasFrame::setImage(const QImage &image){
-    img = image;
+    img = image.copy();
+    imgSizeX = img.width();
+    imgSizeY = img.height();
+    updateDisplay();
     updateDisplay();
 }
 
+
 void CanvasFrame::changeCanvasSize(int x, int y){
-    /// TODO connect this to UI/add way for UI to change values
     imgSizeX = x;
     imgSizeY = y;
+
+    // Creates a new image with the new dimesions.
+    QImage newImg(imgSizeX, imgSizeY, QImage::Format_RGB32);
+    newImg.fill(Qt::white);
+
+    img = newImg;
+
+    setFixedSize(imgSizeX * scale, imgSizeY * scale);
+
     updateDisplay();
 }
 
@@ -50,17 +62,22 @@ void CanvasFrame::mouseMoveEvent(QMouseEvent *event){
 void CanvasFrame::drawOnCanvas(int x, int y){
     int newX = x / scale;
     int newY = y / scale;
+
+    if (newX < 0 || newY < 0 || newX >= img.width() || newY >= img.height())
+        return;
+
+    img.setPixel(newX, newY, color);
+    updateDisplay();
     /// uncomment for debugging
     ///std::cout << "Mouse: (" << x << ", " << y << "); " << "Pixel: (" << newX << ", " << newY << ")" << std::endl;
     /// QImage has a valid() function that can check whether or not the mouse is within the Widget rectangle. Use this to figure out if it should draw using valid().
-    if (img.valid(newX, newY)) {
-        img.setPixel(newX, newY, color);
-        updateDisplay();
-    }
+    //if (img.valid(newX, newY)) {
+        //img.setPixel(newX, newY, color);
+        //updateDisplay();
+    //}
 }
 
 void CanvasFrame::setColor(QRgb newColor){
-    /// TODO connect this to UI/add way for UI to change values
     penColor = newColor;
     color = penColor;
 }
@@ -75,7 +92,7 @@ void CanvasFrame::eraseColor(){
 
 void CanvasFrame::updateDisplay(){
     QImage scaled = img.scaled(imgSizeX * scale, imgSizeY * scale, Qt::KeepAspectRatio, Qt::FastTransformation);
-    QLabel* canvas = ui->canvasLabel;
+    //QLabel* canvas = ui->canvasLabel;
     QPainter painter(&scaled);
     painter.setPen(QPen(Qt::lightGray));
     /// TODO fix the weird way it's being rendered. The lines aren't perfect/look good enough. it should display the accurate amount of pixels no matter the sizex/y or scale.
@@ -85,9 +102,15 @@ void CanvasFrame::updateDisplay(){
     for (int y = 0; y <= imgSizeY; y++) {
         painter.drawLine(0, y * scale, imgSizeY * scale, y * scale);
     }
-    QPixmap pixmap = QPixmap::fromImage(scaled);
-    canvas->setPixmap(pixmap);
-    canvas->show();
+    //QPixmap pixmap = QPixmap::fromImage(scaled);
+    //canvas->setPixmap(pixmap);
+    //canvas->show();
+
+    ui->canvasLabel->setFixedSize(scaled.size());
+    ui->canvasLabel->setPixmap(QPixmap::fromImage(scaled));
+    ui->canvasLabel->show();
+
+    setFixedSize(scaled.size());
 }
 
 CanvasFrame::~CanvasFrame()

@@ -18,8 +18,10 @@ class CanvasFrame : public QWidget
 public:
     explicit CanvasFrame(QWidget *parent = nullptr);
     void setImage(const QImage &image);
-    QImage getImage() const { return img; } // Returns the canvas as an image
+    QImage getImage() const { return img; } // returns the canvas as an image
     QRgb getPenColor() const { return penColor; }
+    int getCanvasSizeX() { return imgSizeX; } // returns the canvas width
+    int getCanvasSizeY() { return imgSizeY; } // returns the canvas height
     bool isEraserActive() const { return color == eraserColor; }
     ~CanvasFrame();
 
@@ -40,13 +42,13 @@ private:
     QImage img;
     QLabel* canvas;
     QPixmap pixmap;
-    QRgb penColor = qRgb(255,0,0);  // pen color (always red)
+    QRgb penColor = qRgb(255,0,0);  // pen color (starts as red)
     QRgb color; // current color used for drawing
     QRgb eraserColor = qRgb(255,255,255);
     QRgb previousColor;
-    int imgSizeX = 32; /// default size will be 32x32
-    int imgSizeY = 32; /// default size will be 32x32
-    int scale = 10; /// need to scale it by 10x to display properly
+    int imgSizeX = 32;
+    int imgSizeY = 32;
+    int scale = 10; // need to scale it by 10x to display properly
     void updateDisplay();
 };
 

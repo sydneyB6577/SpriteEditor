@@ -22,7 +22,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Make the scroll area’s widget the container for thumbnails
+    // Make the scroll area’s widget the container for thumbnails.
     QWidget *scrollWidget = new QWidget();
     scrollWidget->setLayout(new QHBoxLayout());
     scrollWidget->layout()->setSpacing(4);
@@ -31,15 +31,15 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     ui->scrollArea_2->setWidget(scrollWidget);
     ui->scrollArea_2->setWidgetResizable(true);
 
-    // Create timeline inside scroll area
+    // Create timeline inside scroll area.
     timeline = new Timeline(scrollWidget);
     scrollWidget->layout()->addWidget(timeline);
 
-    // Set up the first frame
-    currentCanvas = ui->canvasFrame; // your existing canvas in the UI
+    // Set up the first frame.
+    currentCanvas = ui->canvasFrame; // existing canvas in the UI
     frames.append(currentCanvas);
 
-    // Preview setup
+    // Preview the setup.
     preview = new Preview(this, ui->previewArea);
     preview->updatePreviewSpeed(ui->animationSpeedSpinBox->value());
     connect(ui->animationSpeedSpinBox, &QSpinBox::valueChanged, this, [this](int newSpeed){ preview->updatePreviewSpeed(newSpeed); });
@@ -60,6 +60,9 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     connect(ui->penColor,&QPushButton::clicked, this, &MainWindow::chooseColor);
     //connect(ui->eraserTool, &QPushButton::clicked, ui->canvasFrame, &CanvasFrame::eraseColor); /// set the color of the canvas frame to white, ie. eraser
 
+    // Choose the canvas size.
+    connect(ui->newProject, &QPushButton::clicked, this, &MainWindow::chooseCanvasSize);
+
     // Save & open project.
     connect(ui->saveProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::saveProject);
     connect(ui->openProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::openProject);
@@ -71,17 +74,17 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
         }
     });
 
-    // Gives saveAndOpen a pointer to `frames` so it can access all frames during saving/loading
+    // Gives saveAndOpen a pointer to `frames` so it can access all frames during saving/loading.
     saveAndOpen -> accessFrames(&frames);
 
-    // Restores all frames when open a project
+    // Restores all frames when open a project.
     connect(saveAndOpen, &SaveAndOpen::projectLoaded, this, &MainWindow::restoreFramesFromOpenedProject);
 
-    // Connect move frame left/right buttons
+    // Connect move frame left/right buttons.
     connect(ui->moveFrameLeft, &QPushButton::clicked, this, &MainWindow::moveFrameLeft);
     connect(ui->moveFrameRight, &QPushButton::clicked, this, &MainWindow::moveFrameRight);
 
-    // Rotate the canvas
+    // Rotate the canvas.
     connect(ui->rotateLeft, &QPushButton::clicked, this, &MainWindow::rotateCanvasLeft);
     connect(ui->rotateRight, &QPushButton::clicked, this, &MainWindow::rotateCanvasRight);
     connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::resetCanvasOrientation);
@@ -90,20 +93,20 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
 // Adds a frame.
 void MainWindow::addFrame()
 {
-    // update preview with newly finished frame
+    // Update preview with newly finished frame.
     preview->updatePreviewFrames(frames);
 
-    // 1. Save thumbnail of the current canvas
+    // Save thumbnail of the current canvas.
     QImage currentImage = currentCanvas->getImage();
     timeline->addFrameThumbnail(currentImage);
 
-    // 2. Create a new CanvasFrame
+    // Create a new CanvasFrame.
     CanvasFrame *newFrame = new CanvasFrame(ui->canvasFrame);
 
-    // Make it fill the container exactly
-    newFrame->setFixedSize(ui->canvasFrame->size());
+    // Make it fill the container exactly.
+    newFrame->changeCanvasSize(ui->canvasFrame->getCanvasSizeX(), ui->canvasFrame->getCanvasSizeY());
 
-    // 3. Replace the old canvas in the container
+    // Replace the old canvas in the container.
     QLayout *layout = ui->canvasFrame->layout();
     if (!layout) {
         layout = new QVBoxLayout(ui->canvasFrame);
@@ -112,7 +115,7 @@ void MainWindow::addFrame()
         ui->canvasFrame->setLayout(layout);
     }
 
-    // Remove old canvas
+    // Remove old canvas.
     QLayoutItem *oldItem;
     while ((oldItem = layout->takeAt(0)) != nullptr) {
         QWidget *w = oldItem->widget();
@@ -122,14 +125,14 @@ void MainWindow::addFrame()
         delete oldItem;
     }
 
-    // Add new canvas to the container
+    // Add new canvas to the container.
     layout->addWidget(newFrame);
 
-    // 4. Update current canvas pointer
+    // Update current canvas pointer.
     currentCanvas = newFrame;
     frames.append(newFrame);
 
-    // 5. Connect tools to the new canvas
+    // Connect tools to the new canvas.
     connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
     connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
     connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::resetCanvasOrientation);
@@ -205,33 +208,33 @@ void MainWindow::deleteFrame()
 
 void MainWindow::duplicateCurrentFrame()
 {
-    // update preview with newly finished frame
+    // Update preview with newly finished frame.
     preview->updatePreviewFrames(frames);
 
     if (!currentCanvas) return;
 
-    // Save thumbnail of current canvas
+    // Save thumbnail of current canvas.
     QImage currentImage = currentCanvas->getImage();
     timeline->addFrameThumbnail(currentImage);
 
-    // Create new CanvasFrame with the same parent (container)
-    CanvasFrame* newFrame = new CanvasFrame(ui->canvasFrame);
+    // Create new CanvasFrame with the same parent (container).
+    CanvasFrame* newFrame = new CanvasFrame(this);
 
-    // Copy the image from the current canvas
-    QImage copiedImage = currentCanvas->getImage();
+    // Copy the image from the current canvas.
+    QImage copiedImage = currentCanvas->getImage().copy();
     newFrame->changeCanvasSize(copiedImage.width(), copiedImage.height());
-    // Copy pen/eraser state
+    // Copy pen/eraser state.
     newFrame->setColor(currentCanvas->getPenColor());
     if (currentCanvas->isEraserActive()) {
         newFrame->eraseColor();
     } else {
         newFrame->penTool();
     }
-    // Fill newFrame with copied image
+    // Fill newFrame with copied image.
     QPainter p(&copiedImage);
     newFrame->setImage(currentCanvas->getImage());  // direct assignment
 
-    // Add to container layout
+    // Add to container layout.
     QLayout* layout = ui->canvasFrame->layout();
     if (!layout) {
         layout = new QVBoxLayout(ui->canvasFrame);
@@ -240,21 +243,21 @@ void MainWindow::duplicateCurrentFrame()
         ui->canvasFrame->setLayout(layout);
     }
 
-    // Remove old canvas
+    // Remove old canvas.
     QLayoutItem* oldItem;
     while ((oldItem = layout->takeAt(0)) != nullptr) {
         QWidget* w = oldItem->widget();
-        if (w) w->hide(); // we keep the old one in memory (frames vector)
+        if (w) w->hide(); // keep the old one in memory (frames vector)
         delete oldItem;
     }
 
     layout->addWidget(newFrame);
 
-    // Update currentCanvas pointer and frame list
+    // Update currentCanvas pointer and frame list.
     currentCanvas = newFrame;
     frames.append(newFrame);
 
-    // Connect tools
+    // Connect the tools. (need to connect the pen color tool too?)
     connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
     connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
 }
@@ -295,6 +298,34 @@ void MainWindow::chooseColor()
         currentCanvas->setColor(chosen);
         currentCanvas->penTool();
     }
+}
+
+void MainWindow::chooseCanvasSize()
+{
+    QDialog dlg(this);
+    dlg.setWindowTitle("Choose canvas size (1-64)");
+
+    QFormLayout *canvasLayout = new QFormLayout(&dlg);
+    QSpinBox *cSpin = new QSpinBox(&dlg);
+
+    cSpin->setRange(1,64);
+
+    int currentWidth = currentCanvas->getCanvasSizeX();
+    cSpin->setValue(currentWidth);
+
+    canvasLayout->addRow("Size: ",cSpin);
+
+    QDialogButtonBox *canvasButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal,&dlg );
+    canvasLayout->addRow(canvasButtons);
+
+    QObject::connect(canvasButtons, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+    QObject::connect(canvasButtons, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+
+    if (dlg.exec() == QDialog::Accepted) {
+        currentCanvas->changeCanvasSize(cSpin->value(), cSpin->value());
+        currentCanvas->penTool();
+    }
+
 }
 
 void MainWindow::restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames)
