@@ -41,8 +41,6 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     preview = new Preview(this, ui->previewArea);
     preview->updatePreviewSpeed(ui->animationSpeedSpinBox->value());
     connect(ui->animationSpeedSpinBox, &QSpinBox::valueChanged, this, [this](int newSpeed){ preview->updatePreviewSpeed(newSpeed); });
-
-
     connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::addFrame);
     connect(ui->duplicateFrameButton, &QPushButton::clicked, this, &MainWindow::duplicateCurrentFrame);
 

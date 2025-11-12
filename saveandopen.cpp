@@ -21,6 +21,7 @@ void SaveAndOpen::saveProject()
         return; // prevents crashing
     }
 
+    // Choose where to save the JSON file
     QString fileName = QFileDialog::getSaveFileName(nullptr, "Save Project", "", "JSON file (*.json)");
     if (fileName.isEmpty()) {
         return;
@@ -29,6 +30,7 @@ void SaveAndOpen::saveProject()
     QJsonObject serializedProject;
     QJsonArray jsonFramesArray;
 
+    // Serialize all frames in this project
     for (CanvasFrame *frame : *frames) {
         if (!frame) {
             continue;
@@ -45,8 +47,8 @@ void SaveAndOpen::saveProject()
         jsonFrame["isEraserActive"] = frame -> isEraserActive();
 
         QJsonArray pixelArray;
-        for (int y = 0; y < frameHeight; ++y) {
-            for (int x = 0; x < frameWidth; ++x) {
+        for (int y = 0; y < frameHeight; y++) {
+            for (int x = 0; x < frameWidth; x++) {
                 pixelArray.append(static_cast<int>(frameImage.pixel(x, y)));
             }
         }
@@ -56,6 +58,7 @@ void SaveAndOpen::saveProject()
     }
     serializedProject["frames"] = jsonFramesArray;
 
+    // Save the JSON file to the direction specified above
     QJsonDocument finalJsonDocument(serializedProject);
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly)) {
@@ -67,9 +70,11 @@ void SaveAndOpen::saveProject()
 
 void SaveAndOpen::openProject()
 {
+    // Open a JSON file
     QString fileName = QFileDialog::getOpenFileName(nullptr, "Open Project", "", "JSON file (*.json)");
     if (fileName.isEmpty()) return;
 
+    // Process & expand the opened JSON file, ready for serialization
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
         return;
@@ -85,6 +90,7 @@ void SaveAndOpen::openProject()
     QJsonArray frames = projectJsonObject["frames"].toArray();
     QVector<CanvasFrame*> newFrames;
 
+    // Deserialize all frames in the JSON file
     for (QJsonValue frame : frames) {
         QJsonObject jsonFrame = frame.toObject();
 
@@ -94,8 +100,8 @@ void SaveAndOpen::openProject()
         QJsonArray pixels = jsonFrame["pixels"].toArray();
 
         int index = 0;
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 if (index < pixels.size()) {
                     frameImage.setPixel(x, y, static_cast<QRgb>(pixels[index].toInt()));
                     ++index;
@@ -120,5 +126,6 @@ void SaveAndOpen::openProject()
         newFrames.append(newFrame);
     }
 
+    // Restore the project in the editor
     emit projectLoaded(newFrames);
 }
