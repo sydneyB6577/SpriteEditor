@@ -13,6 +13,7 @@
 #include <QDialog>
 #include <QFormLayout>
 #include <QDialogButtonBox>
+#include <QMessageBox>
 
 static int currentRotationAngle = 0;
 
@@ -302,6 +303,19 @@ void MainWindow::chooseColor()
 
 void MainWindow::chooseCanvasSize()
 {
+    if(frames.size() >1)
+    {
+    QMessageBox::StandardButton reply = QMessageBox::warning(this, "Start New Project",
+        "There are already frames in the timeline.",
+        QMessageBox::Ok
+        );
+
+        if(reply == QMessageBox::Ok)
+        {
+            return;
+        }
+    }
+
     QDialog dlg(this);
     dlg.setWindowTitle("Choose canvas size (1-64)");
 
