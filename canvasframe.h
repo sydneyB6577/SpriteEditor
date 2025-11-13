@@ -1,6 +1,12 @@
 #ifndef CANVASFRAME_H
 #define CANVASFRAME_H
-
+/*
+ * Graham Taggart (Team Control-Alt-Elite)
+ * November 13, 2025
+ * A8: Sprite Editor Implementation
+ * GitHub Username: grahamtaggart
+ * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx.git
+*/
 #include <QWidget>
 #include <QImage>
 #include <QLabel>
