@@ -30,8 +30,8 @@ public slots:
     void setColor(QRgb); // when called change the color of the CanvasFrame.
     void penTool(); // used after eraseButton is pressed to reset back to previous color
     void eraseColor(); // sets color to default white, rgb(255, 255, 255)
-    void changeCanvasSize(int, int); /// TODO
-    void changeScale(int); /// TODO. Changing the scale should change the amount of pixels for the image, as well as the lines drawn.
+    void changeCanvasSize(int, int);
+    void changeScale(int);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

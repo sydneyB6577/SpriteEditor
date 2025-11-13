@@ -6,7 +6,7 @@
 #include <QList>
 #include <QScrollArea>
 #include "clickablelabel.h"
-#include "canvasframe.h"
+
 
 class Timeline : public QWidget
 {
