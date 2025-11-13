@@ -65,3 +65,7 @@ void Timeline::updateSelectedFrameIndex(int index) {
 
     thumbnails[selectedFrameIndex]->setStyleSheet("border: 2px solid red; ");
 }
+
+bool Timeline::isEmpty() {
+    return thumbnails.isEmpty();
+}

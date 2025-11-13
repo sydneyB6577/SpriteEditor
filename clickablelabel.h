@@ -22,7 +22,6 @@ signals:
 
 protected:
     void mousePressEvent(QMouseEvent* event);
-
 };
 
 #endif // CLICKABLELABEL_H

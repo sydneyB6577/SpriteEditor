@@ -24,7 +24,6 @@ void CanvasFrame::setImage(const QImage &image){
     updateDisplay();
 }
 
-
 void CanvasFrame::changeCanvasSize(int x, int y){
     imgSizeX = x;
     imgSizeY = y;

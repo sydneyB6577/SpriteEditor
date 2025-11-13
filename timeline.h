@@ -6,6 +6,7 @@
 #include <QList>
 #include <QScrollArea>
 #include "clickablelabel.h"
+#include "canvasframe.h"
 
 class Timeline : public QWidget
 {
@@ -18,6 +19,7 @@ public:
     int frameCount() const { return thumbnails.size(); }
     int getSelectedFrameIndex() const;
     void updateSelectedFrameIndex(int index);
+    bool isEmpty();
 
 signals:
     void frameSelected(int index);  // emitted when user clicks a thumbnail

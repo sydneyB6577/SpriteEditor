@@ -142,9 +142,8 @@ void MainWindow::addFrame()
 void MainWindow::deleteFrame()
 {
     int selectedFrameIndex = timeline->getSelectedFrameIndex();
-    // TODO: this index should be the selected frame's index, call updateSelectedFrameIndex()
 
-    if (selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size()) {
+    if (timeline->isEmpty() || selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size()) {
         return; // prevents crash
     }
 
@@ -303,12 +302,8 @@ void MainWindow::chooseColor()
 
 void MainWindow::chooseCanvasSize()
 {
-    if(frames.size() >1)
-    {
-    QMessageBox::StandardButton reply = QMessageBox::warning(this, "Start New Project",
-        "There are already frames in the timeline.",
-        QMessageBox::Ok
-        );
+    if(frames.size() > 1) {
+        QMessageBox::StandardButton reply = QMessageBox::warning(this, "Close the program first", "There are frames already in the timeline. Close the program and repoen it to create a new project", QMessageBox::Ok);
 
         if(reply == QMessageBox::Ok)
         {

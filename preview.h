@@ -22,7 +22,6 @@ public:
     void updatePreviewSpeed(int updateRateMillis);
     void updatePreviewFrames(const QVector<CanvasFrame*>& frames);
 
-
 private:
     QLabel *previewLabel;
     int curFrameIdx;

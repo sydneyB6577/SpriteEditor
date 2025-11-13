@@ -7,7 +7,6 @@
 
 ClickableLabel::ClickableLabel(QWidget* parent, Qt::WindowFlags f)
     : QLabel(parent) {
-
 }
 
 ClickableLabel::~ClickableLabel() {}
