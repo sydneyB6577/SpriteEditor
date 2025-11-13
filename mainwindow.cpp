@@ -14,6 +14,7 @@
 #include <QFormLayout>
 #include <QDialogButtonBox>
 #include <QMessageBox>
+#include <QColorDialog>
 
 static int currentRotationAngle = 0;
 
@@ -269,43 +270,16 @@ void MainWindow::duplicateCurrentFrame()
 
 void MainWindow::chooseColor()
 {
-    if(!currentCanvas) return;
+    if (!currentCanvas) {
+        return; // prevent crash
+    }
 
-    QDialog dlg(this);
-    dlg.setWindowTitle("Choose RGBA color");
+    QColor currentPenColor = currentCanvas -> getPenColor();
+    QColor newPenColor = QColorDialog::getColor(currentPenColor, this, "Choose pen color");
 
-    QFormLayout *layout = new QFormLayout(&dlg);
-    QSpinBox *rSpin = new QSpinBox(&dlg);
-    QSpinBox *gSpin = new QSpinBox(&dlg);
-    QSpinBox *bSpin = new QSpinBox(&dlg);
-    QSpinBox *aSpin = new QSpinBox(&dlg);
-
-    rSpin->setRange(0,255);
-    gSpin->setRange(0,255);
-    bSpin->setRange(0,255);
-    aSpin->setRange(0,255);
-
-    QColor cur = currentCanvas->getPenColor();
-    rSpin->setValue(cur.red());
-    gSpin->setValue(cur.green());
-    bSpin->setValue(cur.blue());
-    aSpin->setValue(cur.alpha());
-
-    layout->addRow("Red :", rSpin);
-    layout->addRow("Green :", gSpin);
-    layout->addRow("Blue :", bSpin);
-    layout->addRow("Alpha :", aSpin);
-
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal,&dlg );
-    layout->addRow(buttons);
-
-    QObject::connect(buttons, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
-    QObject::connect(buttons, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
-
-    if (dlg.exec() == QDialog::Accepted) {
-        QColor chosen(rSpin->value(), gSpin->value(), bSpin->value(), aSpin->value());
-        currentCanvas->setColor(chosen);
-        currentCanvas->penTool();
+    if (newPenColor.isValid()) {
+        currentCanvas -> setColor(newPenColor);
+        currentCanvas -> penTool();
     }
 }
 
