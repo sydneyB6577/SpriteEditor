@@ -7,9 +7,9 @@ CanvasFrame::CanvasFrame(QWidget *parent)
     , ui(new Ui::CanvasFrame)
 {
     ui->setupUi(this);
-    color = qRgb(255, 0, 0); /// red as the default drawing color to start with.
+    color = QColor(255, 0, 0, 255); /// red as the default drawing color to start with.
     previousColor = color; /// previousColor used to store a color when we switch from the eraser to pen tool
-    img = QImage(imgSizeX, imgSizeY, QImage::Format_RGB32); /// uses imgSizeX/Y so we can change resolution later
+    img = QImage(imgSizeX, imgSizeY, QImage::Format_ARGB32); /// uses imgSizeX/Y so we can change resolution later
     img.setDotsPerMeterX(imgSizeX); /// supposedly setDotsPerMeterX/Y helps correctly lay out the image.
     img.setDotsPerMeterY(imgSizeY);
     img.fill(Qt::white); /// default background white
@@ -29,7 +29,7 @@ void CanvasFrame::changeCanvasSize(int x, int y){
     imgSizeY = y;
 
     // Creates a new image with the new dimesions.
-    QImage newImg(imgSizeX, imgSizeY, QImage::Format_RGB32);
+    QImage newImg(imgSizeX, imgSizeY, QImage::Format_ARGB32);
     newImg.fill(Qt::white);
     img = newImg;
     setFixedSize(imgSizeX * scale, imgSizeY * scale);
@@ -61,12 +61,12 @@ void CanvasFrame::drawOnCanvas(int x, int y){
     //if (newX < 0 || newY < 0 || newX >= img.width() || newY >= img.height())
     //    return;
     if(img.valid(newX, newY)){
-        img.setPixel(newX, newY, color);
+        img.setPixel(newX, newY, color.rgba());
         updateDisplay();
     }
 }
 
-void CanvasFrame::setColor(QRgb newColor){
+void CanvasFrame::setColor(QColor newColor){
     penColor = newColor;
     color = penColor;
 }

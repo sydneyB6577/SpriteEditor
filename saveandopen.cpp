@@ -43,7 +43,7 @@ void SaveAndOpen::saveProject()
         QJsonObject jsonFrame;
         jsonFrame["width"] = frameWidth;
         jsonFrame["height"] = frameHeight;
-        jsonFrame["penColor"] = static_cast<int>(frame -> getPenColor());
+        jsonFrame["penColor"] = static_cast<int>(frame -> getPenColor().rgba());
         jsonFrame["isEraserActive"] = frame -> isEraserActive();
 
         QJsonArray pixelArray;
@@ -96,7 +96,7 @@ void SaveAndOpen::openProject()
 
         int width = jsonFrame["width"].toInt();
         int height = jsonFrame["height"].toInt();
-        QImage frameImage(width, height, QImage::Format_RGB32);
+        QImage frameImage(width, height, QImage::Format_ARGB32);
         QJsonArray pixels = jsonFrame["pixels"].toArray();
 
         int index = 0;

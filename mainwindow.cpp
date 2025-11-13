@@ -55,11 +55,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
         if (currentCanvas) currentCanvas->eraseColor();
     });
 
-    //connect(ui->penTool, &QPushButton::clicked, ui->canvasFrame, &CanvasFrame::penTool); /// should reset to previous color if eraserTool was clicked before penTool
-    /// TODO connect this to UI/add way for UI to change values
-    ///connect(ui->penColor, &QPushButton::clicked, this, [this](){canvasFrame->setColor();}); /// should connect the selection of the penColor to a qRgb value to set CanvasFrame's color
     connect(ui->penColor,&QPushButton::clicked, this, &MainWindow::chooseColor);
-    //connect(ui->eraserTool, &QPushButton::clicked, ui->canvasFrame, &CanvasFrame::eraseColor); /// set the color of the canvas frame to white, ie. eraser
 
     // Choose the canvas size.
     connect(ui->newProject, &QPushButton::clicked, this, &MainWindow::chooseCanvasSize);
@@ -267,25 +263,29 @@ void MainWindow::chooseColor()
     if(!currentCanvas) return;
 
     QDialog dlg(this);
-    dlg.setWindowTitle("Choose RGB color");
+    dlg.setWindowTitle("Choose RGBA color");
 
     QFormLayout *layout = new QFormLayout(&dlg);
     QSpinBox *rSpin = new QSpinBox(&dlg);
     QSpinBox *gSpin = new QSpinBox(&dlg);
     QSpinBox *bSpin = new QSpinBox(&dlg);
+    QSpinBox *aSpin = new QSpinBox(&dlg);
 
     rSpin->setRange(0,255);
     gSpin->setRange(0,255);
     bSpin->setRange(0,255);
+    aSpin->setRange(0,255);
 
-    QRgb cur = currentCanvas->getPenColor();
-    rSpin->setValue(qRed(cur));
-    gSpin->setValue(qGreen(cur));
-    bSpin->setValue(qBlue(cur));
+    QColor cur = currentCanvas->getPenColor();
+    rSpin->setValue(cur.red());
+    gSpin->setValue(cur.green());
+    bSpin->setValue(cur.blue());
+    aSpin->setValue(cur.alpha());
 
-    layout->addRow("Red: ",rSpin);
+    layout->addRow("Red :", rSpin);
     layout->addRow("Green :", gSpin);
-    layout->addRow("Blue :",bSpin);
+    layout->addRow("Blue :", bSpin);
+    layout->addRow("Alpha :", aSpin);
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal,&dlg );
     layout->addRow(buttons);
@@ -294,7 +294,7 @@ void MainWindow::chooseColor()
     QObject::connect(buttons, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
 
     if (dlg.exec() == QDialog::Accepted) {
-        QRgb chosen = qRgb(rSpin->value(), gSpin->value(), bSpin->value());
+        QColor chosen(rSpin->value(), gSpin->value(), bSpin->value(), aSpin->value());
         currentCanvas->setColor(chosen);
         currentCanvas->penTool();
     }
