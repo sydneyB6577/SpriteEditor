@@ -64,9 +64,8 @@ void CanvasFrame::drawOnCanvas(int x, int y)
     int newX = x / scale;
     int newY = y / scale;
 
-    //if (newX < 0 || newY < 0 || newX >= img.width() || newY >= img.height())
-    //    return;
-    if(img.valid(newX, newY)){
+    if(img.valid(newX, newY))
+    {
         img.setPixel(newX, newY, color.rgba());
         updateDisplay();
     }
