@@ -16,7 +16,8 @@ CanvasFrame::CanvasFrame(QWidget *parent)
     updateDisplay();
 }
 
-void CanvasFrame::setImage(const QImage &image){
+void CanvasFrame::setImage(const QImage &image)
+{
     img = image.copy();
     imgSizeX = img.width();
     imgSizeY = img.height();
@@ -24,7 +25,8 @@ void CanvasFrame::setImage(const QImage &image){
     updateDisplay();
 }
 
-void CanvasFrame::changeCanvasSize(int x, int y){
+void CanvasFrame::changeCanvasSize(int x, int y)
+{
     imgSizeX = x;
     imgSizeY = y;
 
@@ -36,25 +38,29 @@ void CanvasFrame::changeCanvasSize(int x, int y){
     updateDisplay();
 }
 
-void CanvasFrame::changeScale(int newScale){
+void CanvasFrame::changeScale(int newScale)
+{
     /// Default scale is 10, which means a 32x32 image will become a 320x320 image.
     scale = newScale;
 }
 
-void CanvasFrame::mousePressEvent(QMouseEvent *event){
+void CanvasFrame::mousePressEvent(QMouseEvent *event)
+{
     /// Take a QMouseEvent position x and y, then call drawOnCanvas to update canvas.
     int x = event->position().x();
     int y = event->position().y();
     drawOnCanvas(x, y);
 }
 
-void CanvasFrame::mouseMoveEvent(QMouseEvent *event){
+void CanvasFrame::mouseMoveEvent(QMouseEvent *event)
+{
     int x = event->position().x();
     int y = event->position().y();
     drawOnCanvas(x, y);
 }
 
-void CanvasFrame::drawOnCanvas(int x, int y){
+void CanvasFrame::drawOnCanvas(int x, int y)
+{
     int newX = x / scale;
     int newY = y / scale;
 
@@ -66,27 +72,33 @@ void CanvasFrame::drawOnCanvas(int x, int y){
     }
 }
 
-void CanvasFrame::setColor(QColor newColor){
+void CanvasFrame::setColor(QColor newColor)
+{
     penColor = newColor;
     color = penColor;
 }
 
-void CanvasFrame::penTool(){
+void CanvasFrame::penTool()
+{
     color = penColor;
 }
 
-void CanvasFrame::eraseColor(){
+void CanvasFrame::eraseColor()
+{
     color = eraserColor;
 }
 
-void CanvasFrame::updateDisplay(){
+void CanvasFrame::updateDisplay()
+{
     QImage scaled = img.scaled(imgSizeX * scale, imgSizeY * scale, Qt::KeepAspectRatio, Qt::FastTransformation);
     QPainter painter(&scaled);
     painter.setPen(QPen(Qt::lightGray));
-    for (int x = 0; x <= imgSizeX; x++) {
+    for (int x = 0; x <= imgSizeX; x++)
+    {
         painter.drawLine(x * scale, 0, x * scale, imgSizeX * scale);
     }
-    for (int y = 0; y <= imgSizeY; y++) {
+    for (int y = 0; y <= imgSizeY; y++)
+    {
         painter.drawLine(0, y * scale, imgSizeY * scale, y * scale);
     }
     ui->canvasLabel->setFixedSize(scaled.size());
