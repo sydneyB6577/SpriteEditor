@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
     w.show();
     return a.exec();
 
-    qInstallMessageHandler([](QtMsgType, const QMessageLogContext &, const QString &msg){
+    qInstallMessageHandler([](QtMsgType, const QMessageLogContext &, const QString &msg)
+    {
         qDebug() << msg;
     });
 }

@@ -2,17 +2,15 @@
 #include "ui_canvasframe.h"
 #include <QPainter>
 
-CanvasFrame::CanvasFrame(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::CanvasFrame)
+CanvasFrame::CanvasFrame(QWidget *parent) : QWidget(parent), ui(new Ui::CanvasFrame)
 {
     ui->setupUi(this);
-    color = QColor(255, 0, 0, 255); /// red as the default drawing color to start with.
-    previousColor = color; /// previousColor used to store a color when we switch from the eraser to pen tool
-    img = QImage(imgSizeX, imgSizeY, QImage::Format_ARGB32); /// uses imgSizeX/Y so we can change resolution later
-    img.setDotsPerMeterX(imgSizeX); /// supposedly setDotsPerMeterX/Y helps correctly lay out the image.
+    color = QColor(255, 0, 0, 255); // red as the default drawing color to start with.
+    previousColor = color; // previousColor used to store a color when we switch from the eraser to pen tool
+    img = QImage(imgSizeX, imgSizeY, QImage::Format_ARGB32); // uses imgSizeX/Y so we can change resolution later
+    img.setDotsPerMeterX(imgSizeX); // supposedly setDotsPerMeterX/Y helps correctly lay out the image.
     img.setDotsPerMeterY(imgSizeY);
-    img.fill(Qt::white); /// default background white
+    img.fill(Qt::white); // default background white
     updateDisplay();
 }
 
@@ -25,7 +23,7 @@ void CanvasFrame::setImage(const QImage &image)
     updateDisplay();
 }
 
-void CanvasFrame::changeCanvasSize(int x, int y)
+void CanvasFrame::slot_changeCanvasSize(int x, int y)
 {
     imgSizeX = x;
     imgSizeY = y;
@@ -38,28 +36,28 @@ void CanvasFrame::changeCanvasSize(int x, int y)
     updateDisplay();
 }
 
-void CanvasFrame::changeScale(int newScale)
+void CanvasFrame::slot_changeScale(int newScale)
 {
-    /// Default scale is 10, which means a 32x32 image will become a 320x320 image.
+    // Default scale is 10, which means a 32x32 image will become a 320x320 image.
     scale = newScale;
 }
 
 void CanvasFrame::mousePressEvent(QMouseEvent *event)
 {
-    /// Take a QMouseEvent position x and y, then call drawOnCanvas to update canvas.
+    // Take a QMouseEvent position x and y, then call drawOnCanvas to update canvas.
     int x = event->position().x();
     int y = event->position().y();
-    drawOnCanvas(x, y);
+    slot_drawOnCanvas(x, y);
 }
 
 void CanvasFrame::mouseMoveEvent(QMouseEvent *event)
 {
     int x = event->position().x();
     int y = event->position().y();
-    drawOnCanvas(x, y);
+    slot_drawOnCanvas(x, y);
 }
 
-void CanvasFrame::drawOnCanvas(int x, int y)
+void CanvasFrame::slot_drawOnCanvas(int x, int y)
 {
     int newX = x / scale;
     int newY = y / scale;
@@ -71,18 +69,18 @@ void CanvasFrame::drawOnCanvas(int x, int y)
     }
 }
 
-void CanvasFrame::setColor(QColor newColor)
+void CanvasFrame::slot_setColor(QColor newColor)
 {
     penColor = newColor;
     color = penColor;
 }
 
-void CanvasFrame::penTool()
+void CanvasFrame::slot_penTool()
 {
     color = penColor;
 }
 
-void CanvasFrame::eraseColor()
+void CanvasFrame::slot_eraseColor()
 {
     color = eraserColor;
 }
@@ -92,6 +90,7 @@ void CanvasFrame::updateDisplay()
     QImage scaled = img.scaled(imgSizeX * scale, imgSizeY * scale, Qt::KeepAspectRatio, Qt::FastTransformation);
     QPainter painter(&scaled);
     painter.setPen(QPen(Qt::lightGray));
+
     for (int x = 0; x <= imgSizeX; x++)
     {
         painter.drawLine(x * scale, 0, x * scale, imgSizeX * scale);
@@ -100,10 +99,10 @@ void CanvasFrame::updateDisplay()
     {
         painter.drawLine(0, y * scale, imgSizeY * scale, y * scale);
     }
+
     ui->canvasLabel->setFixedSize(scaled.size());
     ui->canvasLabel->setPixmap(QPixmap::fromImage(scaled));
     ui->canvasLabel->show();
-
     setFixedSize(scaled.size());
 }
 

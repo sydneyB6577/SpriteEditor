@@ -18,9 +18,7 @@
 
 static int currentRotationAngle = 0;
 
-MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -45,55 +43,56 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     preview = new Preview(this, ui->previewArea);
     preview->updatePreviewSpeed(ui->animationSpeedSpinBox->value());
     connect(ui->animationSpeedSpinBox, &QSpinBox::valueChanged, this, [this](int newSpeed){ preview->updatePreviewSpeed(newSpeed); });
-    connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::addFrame);
-    connect(ui->deleteFrameButton, &QPushButton::clicked, this, &MainWindow::deleteFrame);
-    connect(ui->duplicateFrameButton, &QPushButton::clicked, this, &MainWindow::duplicateCurrentFrame);
+    connect(ui->addFrameButton, &QPushButton::clicked, this, &MainWindow::slot_addFrame);
+    connect(ui->deleteFrameButton, &QPushButton::clicked, this, &MainWindow::slot_deleteFrame);
+    connect(ui->duplicateFrameButton, &QPushButton::clicked, this, &MainWindow::slot_duplicateCurrentFrame);
 
-    connect(ui->penTool, &QPushButton::clicked, this, [this](){
-        if (currentCanvas) currentCanvas->penTool();
+    connect(ui->penTool, &QPushButton::clicked, this, [this]()
+    {
+        if (currentCanvas) currentCanvas->slot_penTool();
     });
-    connect(ui->eraserTool, &QPushButton::clicked, this, [this](){
-        if (currentCanvas) currentCanvas->eraseColor();
+    connect(ui->eraserTool, &QPushButton::clicked, this, [this]()
+    {
+        if (currentCanvas) currentCanvas->slot_eraseColor();
     });
-
-    connect(ui->penColor,&QPushButton::clicked, this, &MainWindow::chooseColor);
+    connect(ui->penColor,&QPushButton::clicked, this, &MainWindow::slot_chooseColor);
 
     // Choose the canvas size.
-    connect(ui->newProject, &QPushButton::clicked, this, &MainWindow::chooseCanvasSize);
+    connect(ui->newProject, &QPushButton::clicked, this, &MainWindow::slot_chooseCanvasSize);
 
     // Save & open project.
-    connect(ui->saveProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::saveProject);
-    connect(ui->openProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::openProject);
+    connect(ui->saveProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::slot_saveProject);
+    connect(ui->openProject, &QPushButton::clicked, saveAndOpen, &SaveAndOpen::slot_openProject);
 
     // Connect timeline frame selection
-    connect(timeline, &Timeline::frameSelected, this, [this](int index) {
-        if (index >= 0 && index < frames.size()) {
-            currentCanvas = frames[index];
-        }
+    connect(timeline, &Timeline::frameSelected, this, [this](int index)
+    {
+        if (index >= 0 && index < frames.size()) currentCanvas = frames[index];
     });
 
     // Gives saveAndOpen a pointer to `frames` so it can access all frames during saving/loading.
     saveAndOpen -> accessFrames(&frames);
 
     // Restores all frames when open a project.
-    connect(saveAndOpen, &SaveAndOpen::projectLoaded, this, &MainWindow::restoreFramesFromOpenedProject);
+    connect(saveAndOpen, &SaveAndOpen::projectLoaded, this, &MainWindow::slot_restoreFramesFromOpenedProject);
 
     // Connect move frame left/right buttons.
-    connect(ui->moveFrameLeft, &QPushButton::clicked, this, &MainWindow::moveFrameLeft);
-    connect(ui->moveFrameRight, &QPushButton::clicked, this, &MainWindow::moveFrameRight);
+    connect(ui->moveFrameLeft, &QPushButton::clicked, this, &MainWindow::slot_moveFrameLeft);
+    connect(ui->moveFrameRight, &QPushButton::clicked, this, &MainWindow::slot_moveFrameRight);
 
     // Rotate the canvas.
-    connect(ui->rotateLeft, &QPushButton::clicked, this, &MainWindow::rotateCanvasLeft);
-    connect(ui->rotateRight, &QPushButton::clicked, this, &MainWindow::rotateCanvasRight);
-    connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::resetCanvasOrientation);
+    connect(ui->rotateLeft, &QPushButton::clicked, this, &MainWindow::slot_rotateCanvasLeft);
+    connect(ui->rotateRight, &QPushButton::clicked, this, &MainWindow::slot_rotateCanvasRight);
+    connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::slot_resetCanvasOrientation);
 
-
-    // periodically check for updates on timeline -> update timeline with new info
+    // Periodically check for updates on timeline -> update timeline with new info
     QTimer *timelineUpdater = new QTimer(this);
-    connect(timelineUpdater, &QTimer::timeout, [this](){
+    connect(timelineUpdater, &QTimer::timeout, [this]()
+    {
         int selectedFrameIndex = timeline->getSelectedFrameIndex();
         timeline->clearTimeline();
-        for (CanvasFrame* frame : frames) {
+        for (CanvasFrame* frame : frames)
+        {
             timeline->addFrameThumbnail(frame->getImage());
         }
         timeline->updateSelectedFrameIndex(selectedFrameIndex);
@@ -101,9 +100,10 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     timelineUpdater->setInterval(1000);
     timelineUpdater->start();
 
-    // same as timeline but slower b/c update can reset animation partway through
+    // Same as timeline but slower b/c update can reset animation partway through
     QTimer *previewUpdater = new QTimer(this);
-    connect(previewUpdater, &QTimer::timeout, [this](){
+    connect(previewUpdater, &QTimer::timeout, [this]()
+    {
         preview->updatePreviewFrames(frames);
     });
     previewUpdater->setInterval(5000); // slow because it resets the animation when it runs
@@ -111,7 +111,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
 }
 
 // Adds a frame.
-void MainWindow::addFrame()
+void MainWindow::slot_addFrame()
 {
     // Update preview with newly finished frame.
     preview->updatePreviewFrames(frames);
@@ -124,11 +124,12 @@ void MainWindow::addFrame()
     CanvasFrame *newFrame = new CanvasFrame(ui->canvasFrame);
 
     // Make it fill the container exactly.
-    newFrame->changeCanvasSize(ui->canvasFrame->getCanvasSizeX(), ui->canvasFrame->getCanvasSizeY());
+    newFrame->slot_changeCanvasSize(ui->canvasFrame->getCanvasSizeX(), ui->canvasFrame->getCanvasSizeY());
 
     // Replace the old canvas in the container.
     QLayout *layout = ui->canvasFrame->layout();
-    if (!layout) {
+    if (!layout)
+    {
         layout = new QVBoxLayout(ui->canvasFrame);
         layout->setContentsMargins(0, 0, 0, 0); // no spacing/padding
         layout->setSpacing(0);
@@ -137,9 +138,11 @@ void MainWindow::addFrame()
 
     // Remove old canvas.
     QLayoutItem *oldItem;
-    while ((oldItem = layout->takeAt(0)) != nullptr) {
+    while ((oldItem = layout->takeAt(0)) != nullptr)
+    {
         QWidget *w = oldItem->widget();
-        if (w) {
+        if (w)
+        {
             w->hide();
         }
         delete oldItem;
@@ -152,21 +155,23 @@ void MainWindow::addFrame()
     currentCanvas = newFrame;
     frames.append(newFrame);
     timeline->clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline -> addFrameThumbnail(frame -> getImage());
     }
 
     // Connect tools to the new canvas.
-    connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
-    connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
-    connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::resetCanvasOrientation);
+    connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::slot_penTool);
+    connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::slot_eraseColor);
+    connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::slot_resetCanvasOrientation);
 }
 
-void MainWindow::deleteFrame()
+void MainWindow::slot_deleteFrame()
 {
     int selectedFrameIndex = timeline->getSelectedFrameIndex();
 
-    if (timeline->isEmpty() || selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size()) {
+    if (timeline->isEmpty() || selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size())
+    {
         return; // prevents crash
     }
 
@@ -176,17 +181,20 @@ void MainWindow::deleteFrame()
 
     // Refresh the timeline
     timeline -> clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline -> addFrameThumbnail(frame -> getImage());
     }
 
     // Replace canvas image with next frame; empty canvas if no frames left
-    if (!frames.isEmpty()) {
+    if (!frames.isEmpty())
+    {
         int nextFrameIndex = qMin(selectedFrameIndex, frames.size()-1);
         currentCanvas = frames[nextFrameIndex];
 
         QLayout* layout = ui -> canvasFrame -> layout();
-        if (!layout) {
+        if (!layout)
+        {
             layout = new QVBoxLayout(ui -> canvasFrame);
             layout->setContentsMargins(0, 0, 0, 0);
             layout->setSpacing(0);
@@ -194,18 +202,23 @@ void MainWindow::deleteFrame()
         }
 
         QLayoutItem* oldItem;
-        while ((oldItem = layout -> takeAt(0)) != nullptr) {
-            QWidget* w = oldItem -> widget();
-            if (w) {
-                w -> hide();
+        while ((oldItem = layout -> takeAt(0)) != nullptr)
+        {
+            QWidget* widget = oldItem -> widget();
+            if (widget)
+            {
+                widget -> hide();
             }
             delete oldItem;
         }
 
         layout->addWidget(currentCanvas);
-    } else {
+    }
+    else
+    {
         QLayout* layout = ui->canvasFrame->layout();
-        if (!layout) {
+        if (!layout)
+        {
             layout = new QVBoxLayout(ui -> canvasFrame);
             layout -> setContentsMargins(0, 0, 0, 0);
             layout -> setSpacing(0);
@@ -213,10 +226,12 @@ void MainWindow::deleteFrame()
         }
 
         QLayoutItem* oldItem;
-        while ((oldItem = layout -> takeAt(0)) != nullptr) {
-            QWidget* w = oldItem -> widget();
-            if (w) {
-                w -> hide();
+        while ((oldItem = layout -> takeAt(0)) != nullptr)
+        {
+            QWidget* widget = oldItem -> widget();
+            if (widget)
+            {
+                widget -> hide();
             }
             delete oldItem;
         }
@@ -229,12 +244,15 @@ void MainWindow::deleteFrame()
     preview->updatePreviewFrames(frames);
 }
 
-void MainWindow::duplicateCurrentFrame()
+void MainWindow::slot_duplicateCurrentFrame()
 {
     // Update preview with newly finished frame.
     preview->updatePreviewFrames(frames);
 
-    if (!currentCanvas) return;
+    if (!currentCanvas)
+    {
+        return;
+    }
 
     // Save thumbnail of current canvas.
     QImage currentImage = currentCanvas->getImage();
@@ -245,13 +263,16 @@ void MainWindow::duplicateCurrentFrame()
 
     // Copy the image from the current canvas.
     QImage copiedImage = currentCanvas->getImage().copy();
-    newFrame->changeCanvasSize(copiedImage.width(), copiedImage.height());
+    newFrame->slot_changeCanvasSize(copiedImage.width(), copiedImage.height());
     // Copy pen/eraser state.
-    newFrame->setColor(currentCanvas->getPenColor());
-    if (currentCanvas->isEraserActive()) {
-        newFrame->eraseColor();
-    } else {
-        newFrame->penTool();
+    newFrame->slot_setColor(currentCanvas->getPenColor());
+    if (currentCanvas->isEraserActive())
+    {
+        newFrame->slot_eraseColor();
+    }
+    else
+    {
+        newFrame->slot_penTool();
     }
     // Fill newFrame with copied image.
     QPainter p(&copiedImage);
@@ -259,7 +280,8 @@ void MainWindow::duplicateCurrentFrame()
 
     // Add to container layout.
     QLayout* layout = ui->canvasFrame->layout();
-    if (!layout) {
+    if (!layout)
+    {
         layout = new QVBoxLayout(ui->canvasFrame);
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
@@ -268,9 +290,14 @@ void MainWindow::duplicateCurrentFrame()
 
     // Remove old canvas.
     QLayoutItem* oldItem;
-    while ((oldItem = layout->takeAt(0)) != nullptr) {
-        QWidget* w = oldItem->widget();
-        if (w) w->hide(); // keep the old one in memory (frames vector)
+    while ((oldItem = layout->takeAt(0)) != nullptr)
+    {
+        QWidget* widget = oldItem->widget();
+        if (widget)
+        {
+            widget->hide(); // keep the old one in memory (frames vector)
+        }
+
         delete oldItem;
     }
 
@@ -281,33 +308,37 @@ void MainWindow::duplicateCurrentFrame()
     frames.append(newFrame);
 
     timeline->clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline -> addFrameThumbnail(frame -> getImage());
     }
 
     // Connect the tools. (need to connect the pen color tool too?)
-    connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
-    connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::eraseColor);
+    connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::slot_penTool);
+    connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::slot_eraseColor);
 }
 
-void MainWindow::chooseColor()
+void MainWindow::slot_chooseColor()
 {
-    if (!currentCanvas) {
+    if (!currentCanvas)
+    {
         return; // prevent crash
     }
 
     QColor currentPenColor = currentCanvas -> getPenColor();
     QColor newPenColor = QColorDialog::getColor(currentPenColor, this, "Choose pen color");
 
-    if (newPenColor.isValid()) {
-        currentCanvas -> setColor(newPenColor);
-        currentCanvas -> penTool();
+    if (newPenColor.isValid())
+    {
+        currentCanvas -> slot_setColor(newPenColor);
+        currentCanvas -> slot_penTool();
     }
 }
 
-void MainWindow::chooseCanvasSize()
+void MainWindow::slot_chooseCanvasSize()
 {
-    if(frames.size() > 1) {
+    if(frames.size() > 1)
+    {
         QMessageBox::StandardButton reply = QMessageBox::warning(this, "Close the program first", "There are frames already in the timeline. Close the program and repoen it to create a new project", QMessageBox::Ok);
 
         if(reply == QMessageBox::Ok)
@@ -326,41 +357,42 @@ void MainWindow::chooseCanvasSize()
 
     int currentWidth = currentCanvas->getCanvasSizeX();
     cSpin->setValue(currentWidth);
-
     canvasLayout->addRow("Size: ",cSpin);
 
     QDialogButtonBox *canvasButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal,&dlg );
     canvasLayout->addRow(canvasButtons);
-
     QObject::connect(canvasButtons, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
     QObject::connect(canvasButtons, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
 
-    if (dlg.exec() == QDialog::Accepted) {
-        currentCanvas->changeCanvasSize(cSpin->value(), cSpin->value());
-        currentCanvas->penTool();
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        currentCanvas->slot_changeCanvasSize(cSpin->value(), cSpin->value());
+        currentCanvas->slot_penTool();
     }
-
 }
 
-void MainWindow::restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames)
+void MainWindow::slot_restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames)
 {
     frames = newFrames;
-    if (!frames.isEmpty()) {
+    if (!frames.isEmpty())
+    {
         currentCanvas = frames.first();
     }
 
     timeline->clearTimeline();
-    for (CanvasFrame *frame : frames) {
+    for (CanvasFrame *frame : frames)
+    {
         timeline -> addFrameThumbnail(frame -> getImage());
     }
 
     preview -> updatePreviewFrames(frames);
 }
 
-void MainWindow::moveFrameLeft()
+void MainWindow::slot_moveFrameLeft()
 {
     int selectedFrameIndex = timeline -> getSelectedFrameIndex();
-    if (selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size()) {
+    if (selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size())
+    {
         return; // prevent crash; reaches boundary
     }
 
@@ -368,7 +400,8 @@ void MainWindow::moveFrameLeft()
     currentCanvas = frames[selectedFrameIndex-1];
 
     timeline->clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline -> addFrameThumbnail(frame -> getImage());
     }
 
@@ -376,10 +409,11 @@ void MainWindow::moveFrameLeft()
     preview -> updatePreviewFrames(frames);
 }
 
-void MainWindow::moveFrameRight()
+void MainWindow::slot_moveFrameRight()
 {
     int selectedFrameIndex = timeline -> getSelectedFrameIndex();
-    if (selectedFrameIndex < 0 || selectedFrameIndex >= frames.size()-1) {
+    if (selectedFrameIndex < 0 || selectedFrameIndex >= frames.size()-1)
+    {
         return; // prevent crash; reaches boundary
     }
 
@@ -387,7 +421,8 @@ void MainWindow::moveFrameRight()
     currentCanvas = frames[selectedFrameIndex+1];
 
     timeline -> clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline->addFrameThumbnail(frame -> getImage());
     }
 
@@ -395,72 +430,90 @@ void MainWindow::moveFrameRight()
     preview -> updatePreviewFrames(frames);
 }
 
-void MainWindow::rotateCanvasLeft()
+void MainWindow::slot_rotateCanvasLeft()
 {
-    if (!currentCanvas) return;
+    if (!currentCanvas)
+    {
+        return;
+    }
 
     currentRotationAngle -= 90; // rotate counter-clockwise
-    if (currentRotationAngle <= -360) currentRotationAngle = 0;
+    if (currentRotationAngle <= -360)
+    {
+        currentRotationAngle = 0;
+    }
 
     QImage image = currentCanvas->getImage();
     QTransform transform;
     transform.rotate(-90);
     QImage rotated = image.transformed(transform);
-
     currentCanvas->setImage(rotated);
     currentCanvas->update();
 
     // Update the current thumbnail in the timeline if needed
     timeline->clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline->addFrameThumbnail(frame->getImage());
     }
 
     preview->updatePreviewFrames(frames);
 }
 
-void MainWindow::rotateCanvasRight()
+void MainWindow::slot_rotateCanvasRight()
 {
-    if (!currentCanvas) return;
+    if (!currentCanvas)
+    {
+        return;
+    }
 
     currentRotationAngle += 90; // rotate clockwise
-    if (currentRotationAngle >= 360) currentRotationAngle = 0;
+    if (currentRotationAngle >= 360)
+    {
+        currentRotationAngle = 0;
+    }
 
     QImage image = currentCanvas->getImage();
     QTransform transform;
     transform.rotate(90);
     QImage rotated = image.transformed(transform);
-
     currentCanvas->setImage(rotated);
     currentCanvas->update();
 
     // Update the current thumbnail in the timeline if needed
     timeline->clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline->addFrameThumbnail(frame->getImage());
     }
 
     preview->updatePreviewFrames(frames);
 }
 
-void MainWindow::resetCanvasOrientation()
+void MainWindow::slot_resetCanvasOrientation()
 {
-    if (!currentCanvas) return;
-    if (currentRotationAngle == 0) return; // already normal
+    if (!currentCanvas)
+    {
+        return;
+    }
+
+    if (currentRotationAngle == 0)
+    {
+        return; // already normal
+    }
 
     QImage image = currentCanvas->getImage();
     QTransform transform;
     transform.rotate(-currentRotationAngle); // undo previous rotations
     QImage reset = image.transformed(transform);
-
     currentCanvas->setImage(reset);
     currentCanvas->update();
-
     currentRotationAngle = 0; // reset tracker
 
     // Update the current thumbnail in the timeline if needed
     timeline->clearTimeline();
-    for (CanvasFrame* frame : frames) {
+    for (CanvasFrame* frame : frames)
+    {
         timeline->addFrameThumbnail(frame->getImage());
     }
 

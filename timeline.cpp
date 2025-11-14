@@ -3,8 +3,7 @@
 #include <QMouseEvent>
 #include "clickablelabel.h".h"
 
-Timeline::Timeline(QWidget *parent)
-    : QWidget(parent)
+Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
     layout = new QHBoxLayout(this);
     layout->setSpacing(4);
@@ -26,8 +25,8 @@ void Timeline::addFrameThumbnail(const QImage &frameImage)
     thumb->installEventFilter(this);
     thumb->setProperty("frameIndex", index);
 
-    // adds handleClicked to each thumbnail
-    connect(thumb, &ClickableLabel::clicked, this, &Timeline::handleThumbnailClicked);
+    // Add handleClicked to each thumbnail
+    connect(thumb, &ClickableLabel::clicked, this, &Timeline::slot_handleThumbnailClicked);
 }
 
 void Timeline::clearTimeline()
@@ -36,36 +35,45 @@ void Timeline::clearTimeline()
     thumbnails.clear();
 }
 
-void Timeline::handleThumbnailClicked()
+void Timeline::slot_handleThumbnailClicked()
 {
     ClickableLabel *thumb = qobject_cast<ClickableLabel*>(sender());
-    if (!thumb) return;
+    if (!thumb)
+    {
+        return;
+    }
+
     int index = thumb->property("frameIndex").toInt();
     emit frameSelected(index);
     selectedFrameIndex = index;
-    // qDebug() << index;
 
-    // reset needed for multiple clicks without any actions
-    for (auto t : thumbnails) {
-        t->setStyleSheet("");
+    // Reset needed for multiple clicks without any actions
+    for (auto thumbnail : thumbnails)
+    {
+        thumbnail->setStyleSheet("");
     }
-    thumbnails[index]->setStyleSheet("border: 2px solid red; ");
+
+    thumbnails[index]->setStyleSheet("border: 2px solid red;");
 }
 
-int Timeline::getSelectedFrameIndex() const {
+int Timeline::getSelectedFrameIndex() const
+{
     return selectedFrameIndex;
 }
 
-void Timeline::updateSelectedFrameIndex(int index) {
+void Timeline::updateSelectedFrameIndex(int index)
+{
     selectedFrameIndex = index;
 
-    for (auto t : thumbnails) {
-        t->setStyleSheet("");
+    for (auto thumbnail : thumbnails)
+    {
+        thumbnail->setStyleSheet("");
     }
 
-    thumbnails[selectedFrameIndex]->setStyleSheet("border: 2px solid red; ");
+    thumbnails[selectedFrameIndex]->setStyleSheet("border: 2px solid red;");
 }
 
-bool Timeline::isEmpty() {
+bool Timeline::isEmpty()
+{
     return thumbnails.isEmpty();
 }

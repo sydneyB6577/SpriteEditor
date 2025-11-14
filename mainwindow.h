@@ -8,11 +8,12 @@
 #include "canvasframe.h"
 #include "preview.h"
 
-/* Zijia Xie, Sydney Burt (Team Control-Alt-Elite)
- * November 9, 2025
+/*
+ * Zijia Xie, Sydney Burt, Deya Tallman (Team Control-Alt-Elite)
+ * November 13, 2025
  * A8: Sprite Editor Implementation
- * GitHub Username: homeofhx, sydneyB6577
- * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx.git
+ * GitHub Username: homeofhx, sydneyB6577, deyatallman
+ * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,17 +30,17 @@ public:
     ~MainWindow();
 
 private slots:
-    void addFrame();
-    void duplicateCurrentFrame();
-    void chooseColor();
-    void chooseCanvasSize();
-    void restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames);
-    void deleteFrame();
-    void moveFrameLeft();
-    void moveFrameRight();
-    void rotateCanvasLeft();
-    void rotateCanvasRight();
-    void resetCanvasOrientation();
+    void slot_addFrame();
+    void slot_duplicateCurrentFrame();
+    void slot_chooseColor();
+    void slot_chooseCanvasSize();
+    void slot_restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames);
+    void slot_deleteFrame();
+    void slot_moveFrameLeft();
+    void slot_moveFrameRight();
+    void slot_rotateCanvasLeft();
+    void slot_rotateCanvasRight();
+    void slot_resetCanvasOrientation();
 
 private:
     Ui::MainWindow *ui;

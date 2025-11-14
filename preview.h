@@ -7,13 +7,13 @@
 #include <QLabel>
 #include <QImage>
 
-/* Sydney Burt, Alex Held (Team Control-Alt-Elite)
- * Last Updated November 10, 2025
+/*
+ * Sydney Burt, Alex Held (Team Control-Alt-Elite)
+ * November 13, 2025
  * A8: Sprite Editor Implementation
  * GitHub Username: sydneyB6577, ironman356
- * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx.git
+ * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
-
 class Preview : public QWidget
 {
 

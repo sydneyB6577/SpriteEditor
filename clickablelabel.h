@@ -1,15 +1,16 @@
-
-/**
- * https://wiki.qt.io/Clickable_QLabel
- */
-
 #ifndef CLICKABLELABEL_H
 #define CLICKABLELABEL_H
-
 #include <QLabel>
 #include <QWidget>
 #include <Qt>
 
+/*
+ * Alex Held (Team Control-Alt-Elite)
+ * November 13, 2025
+ * A8: Sprite Editor Implementation
+ * GitHub Username: ironman356
+ * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
+*/
 class ClickableLabel : public QLabel {
     Q_OBJECT
 

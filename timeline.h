@@ -7,7 +7,13 @@
 #include <QScrollArea>
 #include "clickablelabel.h"
 
-
+/*
+ * Sydney Burt (Team Control-Alt-Elite)
+ * November 13, 2025
+ * A8: Sprite Editor Implementation
+ * GitHub Username: sydneyB6577
+ * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
+*/
 class Timeline : public QWidget
 {
     Q_OBJECT
@@ -25,7 +31,7 @@ signals:
     void frameSelected(int index);  // emitted when user clicks a thumbnail
 
 private slots:
-    void handleThumbnailClicked();
+    void slot_handleThumbnailClicked();
 
 private:
     QHBoxLayout *layout;

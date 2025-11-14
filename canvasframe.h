@@ -1,11 +1,12 @@
 #ifndef CANVASFRAME_H
 #define CANVASFRAME_H
+
 /*
  * Graham Taggart (Team Control-Alt-Elite)
  * November 13, 2025
  * A8: Sprite Editor Implementation
  * GitHub Username: grahamtaggart
- * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx.git
+ * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
 #include <QWidget>
 #include <QImage>
@@ -32,12 +33,12 @@ public:
     ~CanvasFrame();
 
 public slots:
-    void drawOnCanvas(int, int); // changes the pixel at x,y with the CanvasFrame's internal color.
-    void setColor(QColor); // when called change the color of the CanvasFrame.
-    void penTool(); // used after eraseButton is pressed to reset back to previous color
-    void eraseColor(); // sets color to default white, rgb(255, 255, 255)
-    void changeCanvasSize(int, int);
-    void changeScale(int);
+    void slot_drawOnCanvas(int, int); // changes the pixel at x,y with the CanvasFrame's internal color.
+    void slot_setColor(QColor); // when called change the color of the CanvasFrame.
+    void slot_penTool(); // used after eraseButton is pressed to reset back to previous color
+    void slot_eraseColor(); // sets color to default white, rgb(255, 255, 255)
+    void slot_changeCanvasSize(int, int);
+    void slot_changeScale(int);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
