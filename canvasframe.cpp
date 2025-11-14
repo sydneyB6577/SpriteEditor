@@ -24,14 +24,16 @@ void CanvasFrame::setImage(const QImage &image)
     imgSizeX = img.width();
     imgSizeY = img.height();
     updateDisplay();
-    updateDisplay();
 }
 
 // Changes the size of the drawable canvas.
 void CanvasFrame::slot_changeCanvasSize(int x, int y)
 {
+
     imgSizeX = x;
     imgSizeY = y;
+
+    float scale = (float)mainDisplaySize / (float)imgSizeX; // float cast to ensure it doesn't do int division
 
     // Creates a new image with the new dimesions.
     QImage newImg(imgSizeX, imgSizeY, QImage::Format_ARGB32);
@@ -41,12 +43,6 @@ void CanvasFrame::slot_changeCanvasSize(int x, int y)
     updateDisplay();
 }
 
-// Changes the scale of the size of the drawable canvas.
-void CanvasFrame::slot_changeScale(int newScale)
-{
-    // Default scale is 10, which means a 32x32 image will become a 320x320 image.
-    scale = newScale;
-}
 
 // Draws on the canvas when the mouse is clicked and/or held.
 void CanvasFrame::mousePressEvent(QMouseEvent *event)
@@ -68,6 +64,7 @@ void CanvasFrame::mouseMoveEvent(QMouseEvent *event)
 // Helper method to set the pixel to a new color when clicked on.
 void CanvasFrame::slot_drawOnCanvas(int x, int y)
 {
+    float scale = (float)mainDisplaySize / (float)imgSizeX; // float cast to ensure it doesn't do int division
     int newX = x / scale;
     int newY = y / scale;
 
@@ -100,7 +97,8 @@ void CanvasFrame::slot_eraseColor()
 // Updates the canvas to a new image.
 void CanvasFrame::updateDisplay()
 {
-    QImage scaled = img.scaled(imgSizeX * scale, imgSizeY * scale, Qt::KeepAspectRatio, Qt::FastTransformation);
+    QImage scaled = img.scaled(mainDisplaySize, mainDisplaySize, Qt::KeepAspectRatio, Qt::FastTransformation);
+    float scale = (float)mainDisplaySize / (float)imgSizeX; // float cast to ensure it doesn't do int division
     QPainter painter(&scaled);
     painter.setPen(QPen(Qt::lightGray));
 

@@ -2,10 +2,10 @@
 #define CANVASFRAME_H
 
 /*
- * Graham Taggart, Sydney Burt (Team Ctrl-Alt-Elite)
- * November 13, 2025
+ * Graham Taggart, Sydney Burt, Alex Held (Team Ctrl-Alt-Elite)
+ * November 14, 2025
  * A8: Sprite Editor Implementation
- * GitHub Username: grahamtaggart, sydneyB6577
+ * GitHub Username: grahamtaggart, sydneyB6577, ironman356
  * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
 #include <QWidget>
@@ -28,8 +28,8 @@ public:
     void setImage(const QImage &image);
     QImage getImage() const { return img; } // returns the canvas as an image
     QColor getPenColor() const { return penColor; }
-    int getCanvasSizeX() { return imgSizeX; } // returns the canvas width
-    int getCanvasSizeY() { return imgSizeY; } // returns the canvas height
+    int getCanvasSizeX() const { return imgSizeX; } // returns the canvas width
+    int getCanvasSizeY() const { return imgSizeY; } // returns the canvas height
     bool isEraserActive() const { return color == eraserColor; }
     ~CanvasFrame();
 
@@ -39,7 +39,6 @@ public slots:
     void slot_penTool(); // used after eraseButton is pressed to reset back to previous color
     void slot_eraseColor(); // sets color to default white, rgb(255, 255, 255)
     void slot_changeCanvasSize(int, int);
-    void slot_changeScale(int);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -56,8 +55,8 @@ private:
     QColor previousColor;
     int imgSizeX = 32;
     int imgSizeY = 32;
-    int scale = 10; // need to scale it by 10x to display properly
     void updateDisplay();
+    const int mainDisplaySize = 500; // px size of main canvas - is always square so 500 = 500px x 500px
 };
 
 #endif // CANVASFRAME_H

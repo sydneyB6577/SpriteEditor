@@ -34,7 +34,6 @@ void Preview::updatePreviewFrames(const QVector<CanvasFrame*>& frames)
         }
     }
 
-    curFrameIdx = 0;
     timer->start();
 }
 
@@ -44,6 +43,12 @@ void Preview::nextFrame()
     if ( frameImgs.isEmpty())
     {
         return;
+    }
+
+    // Check needed for frame deleteion when preview is at end of cycle to prevent out of index
+    if (curFrameIdx >= frameImgs.size())
+    {
+        curFrameIdx = 0;
     }
 
     QPixmap pixmap = QPixmap::fromImage(frameImgs[curFrameIdx]).scaled(previewLabel->size(), Qt::KeepAspectRatio);

@@ -41,9 +41,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(
     // Set up the first frame.
     CanvasFrame *newFrame = new CanvasFrame(ui->canvasFrame);
     currentCanvas = newFrame;
-    currentCanvas->slot_changeScale(ceil(500/ui->canvasFrame->getCanvasSizeX()));
     currentCanvas->slot_changeCanvasSize(32, 32);
-
     frames.append(currentCanvas);
 
     // Preview the setup.
@@ -92,7 +90,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(
     connect(ui->rotateRight, &QPushButton::clicked, this, &MainWindow::slot_rotateCanvasRight);
     connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::slot_resetCanvasOrientation);
 
-    // Periodically check for updates on timeline -> update timeline with new info
+    // Periodically check for updates on timeline -> update timeline with new info, send new info to preview
     QTimer *timelineUpdater = new QTimer(this);
     connect(timelineUpdater, &QTimer::timeout, [this]()
     {
@@ -103,18 +101,10 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(
             timeline->addFrameThumbnail(frame->getImage());
         }
         timeline->updateSelectedFrameIndex(selectedFrameIndex);
+        preview->updatePreviewFrames(frames);
     });
     timelineUpdater->setInterval(1000);
     timelineUpdater->start();
-
-    // Same as timeline but slower b/c update can reset animation partway through
-    QTimer *previewUpdater = new QTimer(this);
-    connect(previewUpdater, &QTimer::timeout, [this]()
-    {
-        preview->updatePreviewFrames(frames);
-    });
-    previewUpdater->setInterval(5000); // slow because it resets the animation when it runs
-    previewUpdater->start();
 }
 
 // Adds a blank frame.
@@ -130,11 +120,8 @@ void MainWindow::slot_addFrame()
     // Create a new CanvasFrame.
     CanvasFrame *newFrame = new CanvasFrame(ui->canvasFrame);
 
-    // Change canvas scale based on canvas size
-    newFrame->slot_changeScale(ceil(500/ui->canvasFrame->getCanvasSizeX()));
     // Make it fill the container exactly.
-    newFrame->slot_changeCanvasSize(ui->canvasFrame->getCanvasSizeX(), ui->canvasFrame->getCanvasSizeY());
-
+    newFrame->slot_changeCanvasSize(currentCanvas->getCanvasSizeX(), currentCanvas->getCanvasSizeY());
 
     // Replace the old canvas in the container.
     QLayout *layout = ui->canvasFrame->layout();
@@ -181,7 +168,7 @@ void MainWindow::slot_deleteFrame()
 {
     int selectedFrameIndex = timeline->getSelectedFrameIndex();
 
-    if (timeline->isEmpty() || selectedFrameIndex <= 0 || frames.size() < 1 || selectedFrameIndex >= frames.size())
+    if (timeline->isEmpty() || selectedFrameIndex < 0 || frames.size() <= 1 || selectedFrameIndex >= frames.size())
     {
         return; // prevents crash
     }
@@ -189,7 +176,15 @@ void MainWindow::slot_deleteFrame()
     // Delete the selected frame.
     CanvasFrame* frameToDelete = frames.takeAt(selectedFrameIndex);
     delete frameToDelete;
-    timeline -> updateSelectedFrameIndex(selectedFrameIndex-1);
+    if (selectedFrameIndex != 0)
+    {
+        timeline -> updateSelectedFrameIndex(selectedFrameIndex-1);
+    }
+    else
+    {
+        timeline -> updateSelectedFrameIndex(0);
+
+    }
 
     // Refresh the timeline.
     timeline -> clearTimeline();
@@ -203,7 +198,6 @@ void MainWindow::slot_deleteFrame()
     {
         int nextFrameIndex = qMin(selectedFrameIndex, frames.size()-1);
         currentCanvas = frames[nextFrameIndex];
-
         QLayout* layout = ui -> canvasFrame -> layout();
         if (!layout)
         {
@@ -225,6 +219,7 @@ void MainWindow::slot_deleteFrame()
         }
 
         layout->addWidget(currentCanvas);
+        currentCanvas->show();
     }
     else
     {
@@ -251,6 +246,7 @@ void MainWindow::slot_deleteFrame()
         currentCanvas = new CanvasFrame(ui -> canvasFrame);
         currentCanvas -> setFixedSize(ui -> canvasFrame -> size());
         layout -> addWidget(currentCanvas);
+        currentCanvas->show();
     }
 
     preview->updatePreviewFrames(frames);
@@ -276,7 +272,6 @@ void MainWindow::slot_duplicateCurrentFrame()
 
     // Copy the image from the current canvas.
     QImage copiedImage = currentCanvas->getImage().copy();
-    newFrame->slot_changeScale(ceil(500/currentCanvas->getCanvasSizeX()));
     newFrame->slot_changeCanvasSize(copiedImage.width(), copiedImage.height());
 
     // Copy pen/eraser state.
@@ -356,7 +351,7 @@ void MainWindow::slot_chooseCanvasSize()
 {
     if(frames.size() > 1)
     {
-        QMessageBox::StandardButton reply = QMessageBox::warning(this, "Close the program first", "There are frames already in the timeline. Close the program and repoen it to create a new project", QMessageBox::Ok);
+        QMessageBox::StandardButton reply = QMessageBox::warning(this, "Clear frames first", "There are frames already in the timeline. Remove all frames before starting a new project.", QMessageBox::Ok);
 
         if(reply == QMessageBox::Ok)
         {
@@ -383,7 +378,6 @@ void MainWindow::slot_chooseCanvasSize()
 
     if (dlg.exec() == QDialog::Accepted)
     {
-        currentCanvas->slot_changeScale(ceil(500/cSpin->value()));
         currentCanvas->slot_changeCanvasSize(cSpin->value(), cSpin->value());
         currentCanvas->slot_penTool();
     }
@@ -405,6 +399,11 @@ void MainWindow::slot_restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFr
     }
 
     preview -> updatePreviewFrames(frames);
+    // Force update to all main canvas events via add delete frame
+    this -> slot_addFrame();
+    timeline -> updateSelectedFrameIndex(frames.size()-1);
+    this -> slot_deleteFrame();
+
 }
 
 // Move the selected frame to the left.

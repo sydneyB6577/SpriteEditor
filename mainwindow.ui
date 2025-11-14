@@ -304,7 +304,7 @@
       <item>
        <widget class="CanvasFrame" name="canvasFrame" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -340,7 +340,7 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>774</width>
+           <width>778</width>
            <height>148</height>
           </rect>
          </property>
