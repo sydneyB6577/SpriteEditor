@@ -86,6 +86,28 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent)
     connect(ui->rotateLeft, &QPushButton::clicked, this, &MainWindow::rotateCanvasLeft);
     connect(ui->rotateRight, &QPushButton::clicked, this, &MainWindow::rotateCanvasRight);
     connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::resetCanvasOrientation);
+
+
+    // periodically check for updates on timeline -> update timeline with new info
+    QTimer *timelineUpdater = new QTimer(this);
+    connect(timelineUpdater, &QTimer::timeout, [this](){
+        int selectedFrameIndex = timeline->getSelectedFrameIndex();
+        timeline->clearTimeline();
+        for (CanvasFrame* frame : frames) {
+            timeline->addFrameThumbnail(frame->getImage());
+        }
+        timeline->updateSelectedFrameIndex(selectedFrameIndex);
+    });
+    timelineUpdater->setInterval(1000);
+    timelineUpdater->start();
+
+    // same as timeline but slower b/c update can reset animation partway through
+    QTimer *previewUpdater = new QTimer(this);
+    connect(previewUpdater, &QTimer::timeout, [this](){
+        preview->updatePreviewFrames(frames);
+    });
+    previewUpdater->setInterval(5000); // slow because it resets the animation when it runs
+    previewUpdater->start();
 }
 
 // Adds a frame.
