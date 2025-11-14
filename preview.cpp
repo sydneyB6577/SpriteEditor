@@ -1,5 +1,8 @@
 #include "preview.h"
 
+// A class that controls the animation preview.
+
+// The constructor for the animation preview.
 Preview::Preview(QWidget *parent, QLabel *previewLabel) : QWidget(parent), previewLabel(previewLabel)
 {
     curFrameIdx = 0;
@@ -9,11 +12,13 @@ Preview::Preview(QWidget *parent, QLabel *previewLabel) : QWidget(parent), previ
     timer->start();
 }
 
+// Updates the speed of the preview based on the value given by the user.
 void Preview::updatePreviewSpeed(int updateRateMillis)
 {
     timer->setInterval(updateRateMillis);
 }
 
+// Updates the frames looped through in the animation .
 void Preview::updatePreviewFrames(const QVector<CanvasFrame*>& frames)
 {
     timer->stop();
@@ -33,6 +38,7 @@ void Preview::updatePreviewFrames(const QVector<CanvasFrame*>& frames)
     timer->start();
 }
 
+// A helper method to move to the next frame in the list.
 void Preview::nextFrame()
 {
     if ( frameImgs.isEmpty())

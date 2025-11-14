@@ -14,6 +14,7 @@
 #include <QPixmap>
 #include <QMouseEvent>
 
+// A class that controls the canvas that users can draw on.
 namespace Ui {
 class CanvasFrame;
 }

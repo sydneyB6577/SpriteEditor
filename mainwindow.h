@@ -15,8 +15,11 @@
  * GitHub Username: homeofhx, sydneyB6577, deyatallman
  * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
+
+// Class that operates the main window where the canvas, toolbar, and timeline reside.
 QT_BEGIN_NAMESPACE
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 QT_END_NAMESPACE
@@ -29,6 +32,7 @@ public:
     MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent = nullptr);
     ~MainWindow();
 
+// Slots for all the buttons.
 private slots:
     void slot_addFrame();
     void slot_duplicateCurrentFrame();
@@ -45,8 +49,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Timeline *timeline;
-    QVector<CanvasFrame*> frames;    // store all frame objects
-    CanvasFrame *currentCanvas;   // the currently active canvas
+    QVector<CanvasFrame*> frames; // store all frame objects
+    CanvasFrame *currentCanvas; // the currently active canvas
     Preview *preview;
 };
 #endif // MAINWINDOW_H

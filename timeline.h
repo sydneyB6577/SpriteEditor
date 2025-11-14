@@ -14,6 +14,8 @@
  * GitHub Username: sydneyB6577
  * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
+
+// A class that controls the timeline with the thumbnails of all the canvases.
 class Timeline : public QWidget
 {
     Q_OBJECT
@@ -28,7 +30,7 @@ public:
     bool isEmpty();
 
 signals:
-    void frameSelected(int index);  // emitted when user clicks a thumbnail
+    void frameSelected(int index); // emitted when user clicks a thumbnail
 
 private slots:
     void slot_handleThumbnailClicked();

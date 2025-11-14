@@ -12,6 +12,8 @@
  * GitHub Username: homeofhx
  * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
+
+// A class that controls the buttons to save a proejct and open a previously created project.
 class SaveAndOpen : public QObject
 {
     Q_OBJECT

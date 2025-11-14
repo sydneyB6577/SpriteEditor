@@ -14,6 +14,8 @@
  * GitHub Username: sydneyB6577, ironman356
  * GitHub Repository: https://github.com/University-of-Utah-CS3505/a5-sprite-editor-f25-homeofhx
 */
+
+// A class that controls the animation preview.
 class Preview : public QWidget
 {
 

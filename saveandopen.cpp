@@ -6,15 +6,20 @@
 #include <QJsonObject>
 #include <QMessageBox>
 
+// A class that controls the buttons to save a proejct and open a previously created project.
+
+// The constructor for save and open.
 SaveAndOpen::SaveAndOpen(QObject *parent) : QObject(parent)
 {
 }
 
+// A helper method to access the frames in a project.
 void SaveAndOpen::accessFrames(QVector<CanvasFrame*> *framesReference)
 {
     frames = framesReference;
 }
 
+// Saves the file on the computer of the user.
 void SaveAndOpen::slot_saveProject()
 {
     if (!frames || frames -> isEmpty())
@@ -32,7 +37,7 @@ void SaveAndOpen::slot_saveProject()
     QJsonObject serializedProject;
     QJsonArray jsonFramesArray;
 
-    // Serialize all frames in this project
+    // Serialize all frames in this project.
     for (CanvasFrame *frame : *frames)
     {
         if (!frame)
@@ -64,7 +69,7 @@ void SaveAndOpen::slot_saveProject()
     }
     serializedProject["frames"] = jsonFramesArray;
 
-    // Save the JSON file to the direction specified above
+    // Save the JSON file to the direction specified above.
     QJsonDocument finalJsonDocument(serializedProject);
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
@@ -75,13 +80,14 @@ void SaveAndOpen::slot_saveProject()
     file.close();
 }
 
+// Opens a previously created project saved on the computer of the user.
 void SaveAndOpen::slot_openProject()
 {
-    // Open a JSON file
+    // Open a JSON file.
     QString fileName = QFileDialog::getOpenFileName(nullptr, "Open Project", "", "JSON file (*.json)");
     if (fileName.isEmpty()) return;
 
-    // Process & expand the opened JSON file, ready for serialization
+    // Process & expand the opened JSON file, ready for serialization.
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -99,7 +105,7 @@ void SaveAndOpen::slot_openProject()
     QJsonArray frames = projectJsonObject["frames"].toArray();
     QVector<CanvasFrame*> newFrames;
 
-    // Deserialize all frames in the JSON file
+    // Deserialize all frames in the JSON file.
     for (QJsonValue frame : frames)
     {
         QJsonObject jsonFrame = frame.toObject();
@@ -143,6 +149,6 @@ void SaveAndOpen::slot_openProject()
         newFrames.append(newFrame);
     }
 
-    // Restore the project in the editor
+    // Restore the project in the editor.
     emit projectLoaded(newFrames);
 }

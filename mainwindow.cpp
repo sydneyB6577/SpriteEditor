@@ -18,6 +18,9 @@
 
 static int currentRotationAngle = 0;
 
+// Class that operates the main window where the canvas, toolbar, and timeline reside.
+
+// Constructor for the main window.
 MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -110,7 +113,7 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(
     previewUpdater->start();
 }
 
-// Adds a frame.
+// Adds a blank frame.
 void MainWindow::slot_addFrame()
 {
     // Update preview with newly finished frame.
@@ -166,6 +169,7 @@ void MainWindow::slot_addFrame()
     connect(ui->resetCanvasOrientation, &QPushButton::clicked, this, &MainWindow::slot_resetCanvasOrientation);
 }
 
+// Deletes the selected frame.
 void MainWindow::slot_deleteFrame()
 {
     int selectedFrameIndex = timeline->getSelectedFrameIndex();
@@ -175,18 +179,18 @@ void MainWindow::slot_deleteFrame()
         return; // prevents crash
     }
 
-    // Delete the selected frame
+    // Delete the selected frame.
     CanvasFrame* frameToDelete = frames.takeAt(selectedFrameIndex);
     delete frameToDelete;
 
-    // Refresh the timeline
+    // Refresh the timeline.
     timeline -> clearTimeline();
     for (CanvasFrame* frame : frames)
     {
         timeline -> addFrameThumbnail(frame -> getImage());
     }
 
-    // Replace canvas image with next frame; empty canvas if no frames left
+    // Replace canvas image with next frame; empty canvas if no frames left.
     if (!frames.isEmpty())
     {
         int nextFrameIndex = qMin(selectedFrameIndex, frames.size()-1);
@@ -244,6 +248,7 @@ void MainWindow::slot_deleteFrame()
     preview->updatePreviewFrames(frames);
 }
 
+// Adds a new frame that is a copy of the previous frame.
 void MainWindow::slot_duplicateCurrentFrame()
 {
     // Update preview with newly finished frame.
@@ -318,6 +323,7 @@ void MainWindow::slot_duplicateCurrentFrame()
     connect(ui->eraserTool, &QPushButton::clicked, newFrame, &CanvasFrame::slot_eraseColor);
 }
 
+// Chooses the color of the pen.
 void MainWindow::slot_chooseColor()
 {
     if (!currentCanvas)
@@ -335,6 +341,7 @@ void MainWindow::slot_chooseColor()
     }
 }
 
+// Allows the user to select the canvas size when opening a new project.
 void MainWindow::slot_chooseCanvasSize()
 {
     if(frames.size() > 1)
@@ -371,6 +378,7 @@ void MainWindow::slot_chooseCanvasSize()
     }
 }
 
+// Restores the frames created from a previously created project when opened.
 void MainWindow::slot_restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFrames)
 {
     frames = newFrames;
@@ -388,6 +396,7 @@ void MainWindow::slot_restoreFramesFromOpenedProject(QVector<CanvasFrame*> newFr
     preview -> updatePreviewFrames(frames);
 }
 
+// Move the selected frame to the left.
 void MainWindow::slot_moveFrameLeft()
 {
     int selectedFrameIndex = timeline -> getSelectedFrameIndex();
@@ -409,6 +418,7 @@ void MainWindow::slot_moveFrameLeft()
     preview -> updatePreviewFrames(frames);
 }
 
+// Move the selected frame to the right.
 void MainWindow::slot_moveFrameRight()
 {
     int selectedFrameIndex = timeline -> getSelectedFrameIndex();
@@ -430,6 +440,7 @@ void MainWindow::slot_moveFrameRight()
     preview -> updatePreviewFrames(frames);
 }
 
+// Rotates the current canvas to the left.
 void MainWindow::slot_rotateCanvasLeft()
 {
     if (!currentCanvas)
@@ -460,6 +471,7 @@ void MainWindow::slot_rotateCanvasLeft()
     preview->updatePreviewFrames(frames);
 }
 
+// Rotates the current canvas to the right.
 void MainWindow::slot_rotateCanvasRight()
 {
     if (!currentCanvas)
@@ -490,6 +502,7 @@ void MainWindow::slot_rotateCanvasRight()
     preview->updatePreviewFrames(frames);
 }
 
+// Resets the canvas to its original orientation.
 void MainWindow::slot_resetCanvasOrientation()
 {
     if (!currentCanvas)
@@ -520,6 +533,7 @@ void MainWindow::slot_resetCanvasOrientation()
     preview->updatePreviewFrames(frames);
 }
 
+// Destructor for the main window.
 MainWindow::~MainWindow()
 {
     delete ui;
