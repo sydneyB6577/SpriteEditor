@@ -39,10 +39,10 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(
     scrollWidget->layout()->addWidget(timeline);
 
     // Set up the first frame.
-    currentCanvas = ui->canvasFrame; // existing canvas in the UI
+    CanvasFrame *newFrame = new CanvasFrame(ui->canvasFrame);
+    currentCanvas = newFrame;
     currentCanvas->slot_changeScale(ceil(500/ui->canvasFrame->getCanvasSizeX()));
     currentCanvas->slot_changeCanvasSize(32, 32);
-
 
     frames.append(currentCanvas);
 
@@ -181,7 +181,7 @@ void MainWindow::slot_deleteFrame()
 {
     int selectedFrameIndex = timeline->getSelectedFrameIndex();
 
-    if (timeline->isEmpty() || selectedFrameIndex <= 0 || selectedFrameIndex >= frames.size())
+    if (timeline->isEmpty() || selectedFrameIndex <= 0 || frames.size() < 1 || selectedFrameIndex >= frames.size())
     {
         return; // prevents crash
     }
@@ -189,6 +189,7 @@ void MainWindow::slot_deleteFrame()
     // Delete the selected frame.
     CanvasFrame* frameToDelete = frames.takeAt(selectedFrameIndex);
     delete frameToDelete;
+    timeline -> updateSelectedFrameIndex(selectedFrameIndex-1);
 
     // Refresh the timeline.
     timeline -> clearTimeline();

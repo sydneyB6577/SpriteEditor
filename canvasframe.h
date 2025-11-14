@@ -2,7 +2,7 @@
 #define CANVASFRAME_H
 
 /*
- * Graham Taggart, Sydney Burt (Team Control-Alt-Elite)
+ * Graham Taggart, Sydney Burt (Team Ctrl-Alt-Elite)
  * November 13, 2025
  * A8: Sprite Editor Implementation
  * GitHub Username: grahamtaggart, sydneyB6577

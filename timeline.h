@@ -8,7 +8,7 @@
 #include "clickablelabel.h"
 
 /*
- * Sydney Burt (Team Control-Alt-Elite)
+ * Sydney Burt (Team Ctrl-Alt-Elite)
  * November 13, 2025
  * A8: Sprite Editor Implementation
  * GitHub Username: sydneyB6577

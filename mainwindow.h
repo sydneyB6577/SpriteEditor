@@ -9,7 +9,7 @@
 #include "preview.h"
 
 /*
- * Zijia Xie, Sydney Burt, Deya Tallman (Team Control-Alt-Elite)
+ * Zijia Xie, Sydney Burt, Deya Tallman (Team Ctrl-Alt-Elite)
  * November 13, 2025
  * A8: Sprite Editor Implementation
  * GitHub Username: homeofhx, sydneyB6577, deyatallman

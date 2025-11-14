@@ -8,7 +8,7 @@
 #include <QImage>
 
 /*
- * Sydney Burt, Alex Held (Team Control-Alt-Elite)
+ * Sydney Burt, Alex Held (Team Ctrl-Alt-Elite)
  * November 13, 2025
  * A8: Sprite Editor Implementation
  * GitHub Username: sydneyB6577, ironman356

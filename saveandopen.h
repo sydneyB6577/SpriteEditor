@@ -6,7 +6,7 @@
 #include "canvasframe.h"
 
 /*
- * Zijia Xie (Team Control-Alt-Elite)
+ * Zijia Xie (Team Ctrl-Alt-Elite)
  * November 13, 2025
  * A8: Sprite Editor Implementation
  * GitHub Username: homeofhx
