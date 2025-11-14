@@ -37,6 +37,10 @@ MainWindow::MainWindow(SaveAndOpen *saveAndOpen, QWidget *parent) : QMainWindow(
 
     // Set up the first frame.
     currentCanvas = ui->canvasFrame; // existing canvas in the UI
+    currentCanvas->slot_changeScale(ceil(500/ui->canvasFrame->getCanvasSizeX()));
+    currentCanvas->slot_changeCanvasSize(32, 32);
+
+
     frames.append(currentCanvas);
 
     // Preview the setup.
@@ -123,8 +127,11 @@ void MainWindow::slot_addFrame()
     // Create a new CanvasFrame.
     CanvasFrame *newFrame = new CanvasFrame(ui->canvasFrame);
 
+    // Change canvas scale based on canvas size
+    newFrame->slot_changeScale(ceil(500/ui->canvasFrame->getCanvasSizeX()));
     // Make it fill the container exactly.
     newFrame->slot_changeCanvasSize(ui->canvasFrame->getCanvasSizeX(), ui->canvasFrame->getCanvasSizeY());
+
 
     // Replace the old canvas in the container.
     QLayout *layout = ui->canvasFrame->layout();
@@ -263,7 +270,9 @@ void MainWindow::slot_duplicateCurrentFrame()
 
     // Copy the image from the current canvas.
     QImage copiedImage = currentCanvas->getImage().copy();
+    newFrame->slot_changeScale(ceil(500/currentCanvas->getCanvasSizeX()));
     newFrame->slot_changeCanvasSize(copiedImage.width(), copiedImage.height());
+
     // Copy pen/eraser state.
     newFrame->slot_setColor(currentCanvas->getPenColor());
     if (currentCanvas->isEraserActive())
@@ -366,6 +375,7 @@ void MainWindow::slot_chooseCanvasSize()
 
     if (dlg.exec() == QDialog::Accepted)
     {
+        currentCanvas->slot_changeScale(ceil(500/cSpin->value()));
         currentCanvas->slot_changeCanvasSize(cSpin->value(), cSpin->value());
         currentCanvas->slot_penTool();
     }
