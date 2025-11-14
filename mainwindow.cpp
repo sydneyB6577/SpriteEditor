@@ -128,6 +128,10 @@ void MainWindow::addFrame()
     // Update current canvas pointer.
     currentCanvas = newFrame;
     frames.append(newFrame);
+    timeline->clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline -> addFrameThumbnail(frame -> getImage());
+    }
 
     // Connect tools to the new canvas.
     connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
@@ -252,6 +256,11 @@ void MainWindow::duplicateCurrentFrame()
     // Update currentCanvas pointer and frame list.
     currentCanvas = newFrame;
     frames.append(newFrame);
+
+    timeline->clearTimeline();
+    for (CanvasFrame* frame : frames) {
+        timeline -> addFrameThumbnail(frame -> getImage());
+    }
 
     // Connect the tools. (need to connect the pen color tool too?)
     connect(ui->penTool, &QPushButton::clicked, newFrame, &CanvasFrame::penTool);
