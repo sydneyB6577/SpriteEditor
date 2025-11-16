@@ -1,5 +1,5 @@
-QSprite Project:
+Sprite Animation Editor Project:
 
-This is the repository for the QSprite project of Team Ctrl-Alt-Elite (Alexander Held, Deya Tallman, Graham Taggart, Sydney Burt, Zijia Xie) for the course CS 3505 (Software Practice 2), University of Utah.
+This is the repository for the Sprite Animation Editor Project of Team Ctrl-Alt-Elite (Alexander Held, Deya Tallman, Graham Taggart, Sydney Burt, Zijia Xie) at the University of Utah.
 
-WARNING: If you're a student taking this course and want to seek the approach of any parts in this course's assignments/projects PLEASE STOP DOING SO. It's easy for the course staff/Turnitin/MOSS etc. to detect plagiarism.
+WARNING: If you're a student and want to use any part of this project PLEASE DON'T. It's easy for university staff/Turnitin/MOSS etc. to detect plagiarism.
